@@ -4,8 +4,8 @@ Tests for additional endpoint logic and edge cases in StadiumIQ API routing.
 
 from unittest.mock import AsyncMock, patch
 
-from httpx import ASGITransport, AsyncClient
 import pytest
+from httpx import ASGITransport, AsyncClient
 
 from main import app
 
@@ -36,10 +36,14 @@ async def test_announce_endpoint_success():
     with patch(
         "api.routes.gemini_service.generate_pa_announcement", new_callable=AsyncMock
     ) as mock_announce:
-        mock_announce.return_value = {"en": "Attention please", "es": "Atención por favor"}
+        mock_announce.return_value = {
+            "en": "Attention please",
+            "es": "Atención por favor",
+        }
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
             response = await ac.post(
-                "/api/announce", json={"message": "Attention please", "languages": ["en", "es"]}
+                "/api/announce",
+                json={"message": "Attention please", "languages": ["en", "es"]},
             )
         assert response.status_code == 200
         assert response.json() == {"en": "Attention please", "es": "Atención por favor"}

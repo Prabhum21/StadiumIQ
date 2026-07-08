@@ -71,7 +71,7 @@ class MetricsCollector:
         for k, v in self.endpoint_stats.items():
             endpoints[k] = {
                 "count": v["count"],
-                "avg_latency": (v["latency_sum"] / v["count"]) if v["count"] > 0 else 0.0,
+                "avg_latency": ((v["latency_sum"] / v["count"]) if v["count"] > 0 else 0.0),
             }
 
         return {

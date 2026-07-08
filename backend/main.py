@@ -12,6 +12,7 @@ from slowapi.errors import RateLimitExceeded
 from api import routes
 from api.limiter import limiter
 from middleware import SecurityHeadersMiddleware, TelemetryMiddleware
+from utils.exceptions import StadiumIQException
 from utils.logging import setup_logging
 
 load_dotenv()
@@ -53,9 +54,6 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(TelemetryMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
-
-
-from utils.exceptions import StadiumIQException
 
 
 @app.exception_handler(StadiumIQException)
