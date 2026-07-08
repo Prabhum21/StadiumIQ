@@ -121,12 +121,12 @@ We implemented **every capability area** from the brief as a live, tested featur
 
 ```mermaid
 flowchart TD
-    Users[Fans / Volunteers] --> NextJS[Next.js App Router]
-    NextJS <--> Firestore[(Firestore Real-time WebSockets)]
-    NextJS --> FastAPI[FastAPI Backend (GZip + Rate Limited)]
-    FastAPI --> Sanitizer[Prompt Injection Sanitizer]
-    Sanitizer --> Gemini[Google Gemini 2.5]
-    Gemini --> JSON[Structured JSON Cache]
+    Users["Fans / Volunteers"] --> NextJS["Next.js App Router"]
+    NextJS <--> Firestore[("Firestore Real-time WebSockets")]
+    NextJS --> FastAPI["FastAPI Backend (GZip + Rate Limited)"]
+    FastAPI --> Sanitizer["Prompt Injection Sanitizer"]
+    Sanitizer --> Gemini["Google Gemini 2.5"]
+    Gemini --> JSON["Structured JSON Cache"]
     JSON --> FastAPI
     FastAPI --> NextJS
 ```
