@@ -4,15 +4,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCcw, Activity, Info } from 'lucide-react';
 
-interface AnalysisData {
-  executive_summary?: string;
-  recommended_actions?: string[];
-  priority?: string;
-  overall_status?: string;
-}
+import { OperationsResult } from '@/types';
 
 interface OperationalBriefingCardProps {
-  analysis?: AnalysisData | null;
+  analysis?: OperationsResult | null;
   loading: boolean;
   onRefresh: () => void;
 }

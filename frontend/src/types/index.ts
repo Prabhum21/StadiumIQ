@@ -86,30 +86,58 @@ export interface RouteData {
   alternativeRoute?: string[];
 }
 
-export interface AIAnalysisResponse {
-  overall_status?: string;
-  risk_score?: number;
-  priority?: string;
-  recommended_actions?: string[];
-  predicted_problems?: string[];
-  volunteer_deployment?: string[];
-  executive_summary?: string;
-  assigned_volunteers?: string[];
-  estimated_response?: string;
-  medical_support?: boolean;
-  evacuation_required?: boolean;
-  reasoning?: string[] | string;
-  recommended_route?: string[];
-  estimated_time?: string;
-  accessible_facilities?: string[];
-  rest_areas?: string[];
-  warnings?: string[];
-  recommended_mode?: string;
-  travel_time?: string;
-  cost_estimate?: string;
-  parking_advice?: string;
-  crowd_level?: string;
-  recommended_food_stop?: string | null;
-  accessibility_notes?: string[];
-  alternative_route?: string[];
+export interface OperationsResult {
+  mode: 'operations';
+  overall_status: string;
+  risk_score: number;
+  priority: string;
+  recommended_actions: string[];
+  predicted_problems: string[];
+  volunteer_deployment: string[];
+  executive_summary: string;
 }
+
+export interface EmergencyResult {
+  mode: 'emergency';
+  priority: string;
+  assigned_volunteers: string[];
+  estimated_response: string;
+  recommended_actions: string[];
+  medical_support: boolean;
+  evacuation_required: boolean;
+  reasoning: string[];
+}
+
+export interface AccessibilityResult {
+  mode: 'accessibility';
+  recommended_route: string[];
+  estimated_time: string;
+  accessible_facilities: string[];
+  rest_areas: string[];
+  warnings: string[];
+  reasoning: string[];
+}
+
+export interface TransportResult {
+  mode: 'transport';
+  recommended_mode: string;
+  travel_time: string;
+  cost_estimate: string;
+  parking_advice: string;
+  reasoning: string[];
+}
+
+export interface DefaultResult {
+  mode: 'default';
+  recommended_route: string[];
+  estimated_time: string;
+  crowd_level: string;
+  risk_score: number;
+  recommended_food_stop: string | null;
+  accessibility_notes: string[];
+  alternative_route: string[];
+  reasoning: string | string[];
+}
+
+export type AIAnalysisResponse =
+  OperationsResult | EmergencyResult | AccessibilityResult | TransportResult | DefaultResult;

@@ -85,13 +85,16 @@ export default function OrganizerDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <OperationalBriefingCard
-            analysis={aiAnalysis}
+            analysis={aiAnalysis?.mode === 'operations' ? aiAnalysis : null}
             loading={analyzing}
             onRefresh={fetchAIAnalysis}
           />
         </div>
         <div className="lg:col-span-1 h-full">
-          <RiskMeter score={aiAnalysis?.risk_score || 0} loading={analyzing} />
+          <RiskMeter
+            score={aiAnalysis?.mode === 'operations' ? aiAnalysis.risk_score : 0}
+            loading={analyzing}
+          />
         </div>
       </div>
 
@@ -142,7 +145,7 @@ export default function OrganizerDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <PredictiveAISection
-            predictions={aiAnalysis?.predicted_problems || []}
+            predictions={aiAnalysis?.mode === 'operations' ? aiAnalysis.predicted_problems : []}
             loading={analyzing}
           />
         </div>

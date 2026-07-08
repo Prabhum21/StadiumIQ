@@ -64,7 +64,7 @@ export default function VolunteerDispatchPanel({
     );
   }
 
-  if (!aiAnalysis) return null;
+  if (!aiAnalysis || aiAnalysis.mode !== 'emergency') return null;
 
   return (
     <motion.div

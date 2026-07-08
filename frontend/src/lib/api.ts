@@ -3,8 +3,9 @@ import { ENV } from '@/config/env';
 export function getApiUrl(path: string): string {
   const API_URL = ENV.api.baseUrl;
   if (!API_URL || API_URL.includes('mock')) {
-    console.error('Configuration Error: API_URL environment variable is missing.');
-    return `http://localhost:8000${path}`;
+    throw new Error(
+      'Configuration Error: NEXT_PUBLIC_API_URL environment variable is missing or invalid.'
+    );
   }
 
   // Ensure no double slashes

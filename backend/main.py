@@ -7,10 +7,9 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from starlette.middleware.base import BaseHTTPMiddleware
-
 from api import routes
 from api.limiter import limiter
+from middleware import SecurityHeadersMiddleware
 
 load_dotenv()
 
@@ -33,23 +32,6 @@ app.add_middleware(GZipMiddleware, minimum_size=500)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        # Limit request body size to 1MB
-        content_length = request.headers.get("content-length")
-        if content_length and int(content_length) > 1024 * 1024:
-            return JSONResponse({"detail": "Payload too large"}, status_code=413)
-
-        response = await call_next(request)
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        response.headers["Content-Security-Policy"] = "default-src 'self'"
-        response.headers["Referrer-Policy"] = "no-referrer"
-        return response
 
 
 app.add_middleware(SecurityHeadersMiddleware)

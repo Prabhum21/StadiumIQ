@@ -80,14 +80,9 @@ async def get_crowd_metrics(request: Request) -> CrowdResponse:
     Returns:
         CrowdResponse containing a list of zone densities.
     """
-    return CrowdResponse(
-        zones=[
-            {"name": "North Gate", "density": "High", "queue_time": 15, "trend": "increasing"},
-            {"name": "South Gate", "density": "Low", "queue_time": 2, "trend": "stable"},
-            {"name": "Food Court A", "density": "Medium", "queue_time": 8, "trend": "decreasing"},
-            {"name": "Medical Tent 1", "density": "Low", "queue_time": 0, "trend": "stable"},
-        ]
-    )
+    from services.crowd_service import get_zones
+
+    return CrowdResponse(zones=get_zones())
 
 
 @router.post("/sustainability", response_model=SustainabilityResponse)

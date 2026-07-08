@@ -26,9 +26,11 @@ describe('getApiUrl', () => {
     expect(getApiUrl('/test')).toBe('https://api.stadiumiq.com/test');
   });
 
-  it('should fallback to localhost when NEXT_PUBLIC_API_URL is missing', () => {
+  it('should throw an error when NEXT_PUBLIC_API_URL is missing or invalid', () => {
     ENV.api.baseUrl = 'mock';
-    expect(getApiUrl('/test')).toBe('http://localhost:8000/test');
+    expect(() => getApiUrl('/test')).toThrow(
+      'Configuration Error: NEXT_PUBLIC_API_URL environment variable is missing or invalid.'
+    );
   });
 
   it('should prevent double slashes in paths', () => {

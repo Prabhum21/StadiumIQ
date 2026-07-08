@@ -1,8 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { LogIn, User as UserIcon } from 'lucide-react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { seedDatabaseIfEmpty } from '@/services/firestore/seed';
 import {
@@ -12,6 +11,7 @@ import {
   useTransport,
   useAlerts,
 } from '@/hooks/useFirestore';
+import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import dynamic from 'next/dynamic';
 
 import { Sidebar } from '@/components/dashboard/Sidebar';
@@ -20,6 +20,7 @@ import { DashboardCards } from '@/components/dashboard/DashboardCards';
 import { DashboardOverview } from '@/components/dashboard/DashboardOverview';
 import { CrowdSummary } from '@/components/dashboard/CrowdSummary';
 import { IncidentSummary } from '@/components/dashboard/IncidentSummary';
+import { AuthScreen } from '@/components/auth/AuthScreen';
 
 const NavigationPanel = dynamic(() => import('@/features/navigation/NavigationPanel'), {
   ssr: false,
@@ -45,26 +46,9 @@ export default function Dashboard() {
   const { data: volunteersData, loading: volunteersLoading } = useVolunteers();
   const { data: alertsData, loading: alertsLoading } = useAlerts();
 
-  // Calculate Metrics from Firestore (Memoized)
-  const totalAttendance = useMemo(
-    () => crowdData.reduce((acc, curr) => acc + curr.peopleCount, 0),
-    [crowdData]
-  );
-  const activeIncidents = useMemo(
-    () => incidentsData.filter((i) => i.status !== 'Resolved').length,
-    [incidentsData]
-  );
-  const avgQueueTime = useMemo(
-    () =>
-      crowdData.length > 0
-        ? Math.round(crowdData.reduce((acc, curr) => acc + curr.queueTime, 0) / crowdData.length)
-        : 0,
-    [crowdData]
-  );
-  const availableVolunteers = useMemo(
-    () => volunteersData.filter((v) => v.availability === 'Available').length,
-    [volunteersData]
-  );
+  // Calculate Metrics from Firestore
+  const { totalAttendance, activeIncidents, avgQueueTime, availableVolunteers } =
+    useDashboardMetrics(crowdData, incidentsData, volunteersData);
 
   // Seed DB on mount
   useEffect(() => {
@@ -80,42 +64,7 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] bg-black text-white flex items-center justify-center font-sans p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-10 max-w-md w-full text-center relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
-
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-3xl shadow-[0_0_20px_rgba(59,130,246,0.6)] mb-6">
-            IQ
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
-            Stadium<span className="text-blue-400">IQ</span>
-          </h1>
-          <p className="text-zinc-400 mb-10 text-sm">FIFA World Cup 2026 Smart Platform</p>
-
-          <div className="space-y-4">
-            <button
-              onClick={loginWithGoogle}
-              className="w-full flex items-center justify-center gap-3 glass py-3 rounded-lg hover:bg-white/10 transition-colors font-medium border-white/20"
-            >
-              <LogIn size={18} />
-              Sign in with Google
-            </button>
-            <button
-              onClick={loginAsGuest}
-              className="w-full flex items-center justify-center gap-3 bg-blue-600/20 text-blue-400 border border-blue-500/30 py-3 rounded-lg hover:bg-blue-600/30 transition-colors font-medium"
-            >
-              <UserIcon size={18} />
-              Continue as Guest Fan
-            </button>
-          </div>
-        </motion.div>
-      </div>
-    );
+    return <AuthScreen loginWithGoogle={loginWithGoogle} loginAsGuest={loginAsGuest} />;
   }
 
   const dataLoading = crowdLoading || incidentsLoading || volunteersLoading || alertsLoading;
