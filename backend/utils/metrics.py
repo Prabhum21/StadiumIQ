@@ -3,7 +3,6 @@ Metrics collector utility for StadiumIQ.
 Provides high-performance, concurrent tracking of application telemetry.
 """
 
-import time
 from collections import defaultdict
 from typing import Any
 

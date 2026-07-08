@@ -1,3 +1,3 @@
 """Service layer for StadiumIQ AI integrations."""
 
-__all__ = ["gemini_service", "gemini_prompts", "crowd_service"]
+__all__ = ["crowd_service", "gemini_prompts", "gemini_service"]

@@ -5,7 +5,6 @@ Provides standardized logging formats across all backend modules.
 
 import json
 import logging
-import time
 from typing import Any
 
 

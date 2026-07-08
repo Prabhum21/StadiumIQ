@@ -249,7 +249,7 @@ class GeminiService:
         """
         mode = context_data.get("mode", "navigation")
         context_str = json.dumps(context_data, indent=2)
-        prompt, fallback = get_decision_prompt_and_fallback(mode, context_str)
+        prompt, _fallback = get_decision_prompt_and_fallback(mode, context_str)
 
         schemas = {
             "operations": OperationsResultSchema,
