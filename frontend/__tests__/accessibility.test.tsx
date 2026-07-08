@@ -19,6 +19,9 @@ jest.mock('chart.js', () => ({
 jest.mock('@/hooks/useFirestore', () => ({
   useVenue: () => ({ data: [] }),
   useCrowd: () => ({ data: [] }),
+  useIncidents: () => ({ data: [] }),
+  useVolunteers: () => ({ data: [] }),
+  useAlerts: () => ({ data: [] }),
 }));
 
 describe('Page Accessibility', () => {
