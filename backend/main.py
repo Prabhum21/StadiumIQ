@@ -58,7 +58,10 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     """
     return JSONResponse(
         status_code=500,
-        content={"error_code": "INTERNAL_ERROR", "message": "An unexpected error occurred."},
+        content={
+            "error_code": "INTERNAL_ERROR",
+            "message": "An unexpected error occurred.",
+        },
     )
 
 

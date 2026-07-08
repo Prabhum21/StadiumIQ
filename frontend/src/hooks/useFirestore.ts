@@ -31,6 +31,7 @@ export function useCollection<T>(collectionName: string, queryConstraints: Query
     );
 
     return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionName]); // Simplification: queryConstraints are omitted from dependency array to avoid deep comparison issues
 
   return { data, loading, error };

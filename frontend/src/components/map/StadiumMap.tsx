@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useCrowd } from '@/hooks/useFirestore';
 import { CrowdData } from '@/types';
@@ -22,7 +22,6 @@ const DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-import React from 'react';
 export default React.memo(function StadiumMap({
   onLocationClick,
 }: {

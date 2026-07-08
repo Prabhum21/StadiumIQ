@@ -42,7 +42,11 @@ async def test_gemini_chat_fallback(service):
 async def test_retry_logic_success_on_third_try(service):
     with patch.object(service, "get_client") as mock_client:
         mock_generate = AsyncMock(
-            side_effect=[Exception("Fail 1"), Exception("Fail 2"), MockResponse('{"status": "ok"}')]
+            side_effect=[
+                Exception("Fail 1"),
+                Exception("Fail 2"),
+                MockResponse('{"status": "ok"}'),
+            ]
         )
         mock_client.return_value.aio.models.generate_content = mock_generate
 
@@ -69,7 +73,10 @@ async def test_malformed_json_not_dict(service):
     with patch.object(service, "get_client") as mock_client:
         # First returns json list instead of dict, then valid
         mock_generate = AsyncMock(
-            side_effect=[MockResponse('["not", "a", "dict"]'), MockResponse('{"status": "fixed"}')]
+            side_effect=[
+                MockResponse('["not", "a", "dict"]'),
+                MockResponse('{"status": "fixed"}'),
+            ]
         )
         mock_client.return_value.aio.models.generate_content = mock_generate
 

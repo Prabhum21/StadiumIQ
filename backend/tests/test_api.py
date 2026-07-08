@@ -11,7 +11,10 @@ client = TestClient(app, raise_server_exceptions=False)
 def test_read_root():
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "message": "StadiumIQ AI Backend is running"}
+    assert response.json() == {
+        "status": "ok",
+        "message": "StadiumIQ AI Backend is running",
+    }
 
 
 def test_chat_endpoint_invalid_payload():

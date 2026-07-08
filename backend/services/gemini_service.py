@@ -4,6 +4,7 @@ Handles generation, retries, caching, and prompt sanitization.
 """
 
 import asyncio
+import hashlib
 import json
 import logging
 import os
@@ -115,8 +116,6 @@ class GeminiService:
         Returns:
             The generated data or the fallback.
         """
-        import hashlib
-
         schema_key = str(response_schema) if response_schema else "none"
         cache_key = f"{is_json}_{schema_key}_{hashlib.sha256(prompt.encode()).hexdigest()}"
 
@@ -132,7 +131,9 @@ class GeminiService:
                 response = await client.aio.models.generate_content(
                     model=self.model_name,
                     contents=prompt,
-                    config=types.GenerateContentConfig(**config_kwargs) if config_kwargs else None,
+                    config=(
+                        types.GenerateContentConfig(**config_kwargs) if config_kwargs else None
+                    ),
                 )
 
                 result = self._parse_api_response(response, is_json)
@@ -187,7 +188,10 @@ class GeminiService:
         """
         prompt, fallback = get_sustainability_prompt_and_fallback(travel_mode, distance)
         return await self._generate_with_retry(
-            prompt, is_json=True, fallback=fallback, response_schema=SustainabilityResultSchema
+            prompt,
+            is_json=True,
+            fallback=fallback,
+            response_schema=SustainabilityResultSchema,
         )
 
     async def generate_pa_announcement(self, message: str, languages: list[str]) -> dict[str, str]:
@@ -206,5 +210,8 @@ class GeminiService:
         """
         prompt, fallback = get_shift_briefing_prompt_and_fallback(role, location)
         return await self._generate_with_retry(
-            prompt, is_json=True, fallback=fallback, response_schema=BriefingResultSchema
+            prompt,
+            is_json=True,
+            fallback=fallback,
+            response_schema=BriefingResultSchema,
         )

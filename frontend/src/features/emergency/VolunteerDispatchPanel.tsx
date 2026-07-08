@@ -51,6 +51,7 @@ export default function VolunteerDispatchPanel({
       }
     };
     fetchDispatchPlan();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incident.id]);
 
   if (analyzing) {
