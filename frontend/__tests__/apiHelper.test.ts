@@ -5,8 +5,8 @@ jest.mock('../src/config/env', () => ({
   ENV: {
     api: {
       baseUrl: 'http://localhost:8000',
-    }
-  }
+    },
+  },
 }));
 
 describe('getApiUrl', () => {

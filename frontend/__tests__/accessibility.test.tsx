@@ -18,7 +18,7 @@ jest.mock('chart.js', () => ({
 
 jest.mock('@/hooks/useFirestore', () => ({
   useVenue: () => ({ data: [] }),
-  useCrowd: () => ({ data: [] })
+  useCrowd: () => ({ data: [] }),
 }));
 
 describe('Page Accessibility', () => {
@@ -42,8 +42,8 @@ describe('AccessibilityAssistant Component', () => {
     render(<AccessibilityAssistant />);
     const wheelchairCheckbox = screen.getByLabelText('Wheelchair');
     expect(wheelchairCheckbox).not.toBeChecked();
-    
-    // Using fireEvent on the label wrapper text since input is hidden, 
+
+    // Using fireEvent on the label wrapper text since input is hidden,
     // but the most reliable way in Testing Library is to click the label.
     fireEvent.click(screen.getByText('Wheelchair'));
     expect(wheelchairCheckbox).toBeChecked();

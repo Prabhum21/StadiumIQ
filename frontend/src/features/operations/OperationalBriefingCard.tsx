@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import { motion } from "framer-motion";
-import { RefreshCcw, Activity, Info } from "lucide-react";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { RefreshCcw, Activity, Info } from 'lucide-react';
 
 interface AnalysisData {
   executive_summary?: string;
@@ -17,26 +17,30 @@ interface OperationalBriefingCardProps {
   onRefresh: () => void;
 }
 
-const OperationalBriefingCard: React.FC<OperationalBriefingCardProps> = ({ analysis, loading, onRefresh }) => {
+const OperationalBriefingCard: React.FC<OperationalBriefingCardProps> = ({
+  analysis,
+  loading,
+  onRefresh,
+}) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="glass-card p-6 relative overflow-hidden h-full flex flex-col"
     >
       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-      
+
       <div className="flex justify-between items-center mb-6 relative z-10">
         <h3 className="text-xl font-bold flex items-center gap-2">
           <Activity className="text-blue-400" />
           AI Operational Briefing
         </h3>
-        <button 
+        <button
           onClick={onRefresh}
           disabled={loading}
           className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors disabled:opacity-50"
         >
-          <RefreshCcw size={16} className={loading ? "animate-spin" : ""} />
+          <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
         </button>
       </div>
 
@@ -48,12 +52,16 @@ const OperationalBriefingCard: React.FC<OperationalBriefingCardProps> = ({ analy
       ) : analysis ? (
         <div className="flex-1 space-y-6 relative z-10">
           <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-xl">
-            <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">Executive Summary</h4>
+            <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
+              Executive Summary
+            </h4>
             <p className="text-lg font-medium leading-relaxed">{analysis.executive_summary}</p>
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Recommended Actions</h4>
+            <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
+              Recommended Actions
+            </h4>
             <ul className="space-y-2">
               {analysis.recommended_actions?.map((action: string, i: number) => (
                 <li key={i} className="flex items-start gap-3 bg-white/5 p-3 rounded-lg">
@@ -63,18 +71,24 @@ const OperationalBriefingCard: React.FC<OperationalBriefingCardProps> = ({ analy
               ))}
             </ul>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
-             <div className="bg-white/5 p-4 rounded-xl">
-               <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">System Priority</h4>
-               <span className={`px-3 py-1 rounded-full text-xs font-bold ${analysis.priority === 'Critical' ? 'bg-red-500/20 text-red-400' : analysis.priority === 'High' ? 'bg-orange-500/20 text-orange-400' : 'bg-green-500/20 text-green-400'}`}>
-                 {analysis.priority}
-               </span>
-             </div>
-             <div className="bg-white/5 p-4 rounded-xl">
-               <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Overall Status</h4>
-               <span className="text-lg font-bold">{analysis.overall_status}</span>
-             </div>
+            <div className="bg-white/5 p-4 rounded-xl">
+              <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+                System Priority
+              </h4>
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-bold ${analysis.priority === 'Critical' ? 'bg-red-500/20 text-red-400' : analysis.priority === 'High' ? 'bg-orange-500/20 text-orange-400' : 'bg-green-500/20 text-green-400'}`}
+              >
+                {analysis.priority}
+              </span>
+            </div>
+            <div className="bg-white/5 p-4 rounded-xl">
+              <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+                Overall Status
+              </h4>
+              <span className="text-lg font-bold">{analysis.overall_status}</span>
+            </div>
           </div>
         </div>
       ) : (

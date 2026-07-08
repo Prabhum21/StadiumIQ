@@ -1,10 +1,16 @@
-from typing import Dict
-from fastapi import FastAPI
+import os
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from starlette.middleware.base import BaseHTTPMiddleware
+
 from api import routes
-import os
-from dotenv import load_dotenv
+from api.limiter import limiter
 
 load_dotenv()
 
@@ -25,16 +31,8 @@ app.add_middleware(
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
 
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-from api.limiter import limiter
-
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-from fastapi import Request
-from starlette.middleware.base import BaseHTTPMiddleware
-from fastapi.responses import JSONResponse
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -71,6 +69,6 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 app.include_router(routes.router, prefix="/api")
 
 
-@app.get("/", response_model=Dict[str, str])
-def read_root() -> Dict[str, str]:
+@app.get("/", response_model=dict[str, str])
+def read_root() -> dict[str, str]:
     return {"status": "ok", "message": "StadiumIQ AI Backend is running"}

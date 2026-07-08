@@ -21,7 +21,7 @@ jest.mock('../src/context/AuthContext', () => ({
     loginWithGoogle: jest.fn(),
     loginAsGuest: jest.fn(),
     logout: jest.fn(),
-  })
+  }),
 }));
 
 jest.mock('../src/hooks/useFirestore', () => ({

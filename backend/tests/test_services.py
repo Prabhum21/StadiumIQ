@@ -1,7 +1,7 @@
+from unittest.mock import AsyncMock, patch
+
 import pytest
-import asyncio
-import json
-from unittest.mock import patch, MagicMock, AsyncMock
+
 from services.gemini_service import GeminiService
 
 

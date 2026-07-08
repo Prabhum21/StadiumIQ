@@ -1,10 +1,20 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { User, onAuthStateChanged } from "firebase/auth";
-import { auth, db, googleProvider, signInWithPopup, signInAnonymously, signOut, doc, setDoc, getDoc } from "@/lib/firebase";
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import {
+  auth,
+  db,
+  googleProvider,
+  signInWithPopup,
+  signInAnonymously,
+  signOut,
+  doc,
+  setDoc,
+  getDoc,
+} from '@/lib/firebase';
 
-export type Role = "Fan" | "Volunteer" | "Organizer" | "Security";
+export type Role = 'Fan' | 'Volunteer' | 'Organizer' | 'Security';
 
 export interface UserProfile {
   uid: string;
@@ -37,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchOrCreateUserProfile = async (firebaseUser: User, isGuest: boolean) => {
-    const userRef = doc(db, "users", firebaseUser.uid);
+    const userRef = doc(db, 'users', firebaseUser.uid);
     const userSnap = await getDoc(userRef);
 
     let profile: UserProfile;
@@ -49,13 +59,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       profile = {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        displayName: isGuest ? "Guest Fan" : firebaseUser.displayName,
-        role: "Fan",
+        displayName: isGuest ? 'Guest Fan' : firebaseUser.displayName,
+        role: 'Fan',
         isGuest,
       };
       await setDoc(userRef, profile);
     }
-    
+
     setUser(profile);
   };
 
@@ -76,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
-      console.error("Google login failed", error);
+      console.error('Google login failed', error);
     }
   };
 
@@ -84,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await signInAnonymously(auth);
     } catch (error) {
-      console.error("Guest login failed", error);
+      console.error('Guest login failed', error);
     }
   };
 
@@ -92,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await signOut(auth);
     } catch (error) {
-      console.error("Logout failed", error);
+      console.error('Logout failed', error);
     }
   };
 

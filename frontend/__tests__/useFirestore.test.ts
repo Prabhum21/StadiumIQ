@@ -25,7 +25,7 @@ describe('useFirestore hook', () => {
 
   it('should initialize with loading state', () => {
     (onSnapshot as jest.Mock).mockImplementation(() => jest.fn());
-    
+
     const { result } = renderHook(() => useCollection('users'));
     expect(result.current.loading).toBe(true);
     expect(result.current.data).toEqual([]);
@@ -36,10 +36,10 @@ describe('useFirestore hook', () => {
     const mockData = [{ id: '1', name: 'John' }];
     (onSnapshot as jest.Mock).mockImplementation((q, callback) => {
       callback({
-        docs: mockData.map(doc => ({
+        docs: mockData.map((doc) => ({
           id: doc.id,
-          data: () => doc
-        }))
+          data: () => doc,
+        })),
       });
       return jest.fn();
     });

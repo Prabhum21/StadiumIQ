@@ -3,15 +3,16 @@ Pydantic schemas for the StadiumIQ AI API layer.
 Defines all request and response structures to ensure type safety.
 """
 
+from typing import Any
+
 from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
 
 
 class ChatRequest(BaseModel):
     """Payload for Fan Assistant queries."""
 
     message: str = Field(..., max_length=1000)
-    user_profile: Dict[str, Any] = Field(default_factory=dict)
+    user_profile: dict[str, Any] = Field(default_factory=dict)
 
 
 class ChatResponse(BaseModel):
@@ -36,7 +37,7 @@ class DecisionRequest(BaseModel):
 class DecisionResponse(BaseModel):
     """Structured response for operational decisions."""
 
-    recommendation: Dict[str, Any]
+    recommendation: dict[str, Any]
 
 
 class CrowdZone(BaseModel):
@@ -51,7 +52,7 @@ class CrowdZone(BaseModel):
 class CrowdResponse(BaseModel):
     """List of all crowd zones and their density."""
 
-    zones: List[CrowdZone]
+    zones: list[CrowdZone]
 
 
 class SustainabilityRequest(BaseModel):
@@ -73,7 +74,7 @@ class AnnouncementRequest(BaseModel):
     """Payload for generating multilingual PA announcements."""
 
     message: str
-    languages: List[str]
+    languages: list[str]
 
 
 class BriefingRequest(BaseModel):
@@ -86,7 +87,7 @@ class BriefingRequest(BaseModel):
 class BriefingResponse(BaseModel):
     """Response containing duties and escalation paths."""
 
-    duties: List[str]
+    duties: list[str]
     escalation_path: str
     welcome_phrase: str
 
@@ -97,13 +98,13 @@ class Capability(BaseModel):
     name: str
     description: str
     endpoint: str
-    target_personas: List[str]
+    target_personas: list[str]
 
 
 class CapabilitiesResponse(BaseModel):
     """Response containing all supported capabilities."""
 
-    capabilities: List[Capability]
+    capabilities: list[Capability]
 
 
 class MultilingualAssistRequest(BaseModel):
@@ -111,7 +112,7 @@ class MultilingualAssistRequest(BaseModel):
 
     query: str
     target_language: str
-    context: Optional[str] = None
+    context: str | None = None
 
 
 class MultilingualAssistResponse(BaseModel):

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { collection, onSnapshot, query, QueryConstraint } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { CrowdData, TransportData, FoodVendor, Incident, Volunteer, Venue, Alert } from "@/types";
+import { useState, useEffect } from 'react';
+import { collection, onSnapshot, query, QueryConstraint } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { CrowdData, TransportData, FoodVendor, Incident, Volunteer, Venue, Alert } from '@/types';
 
 export function useCollection<T>(collectionName: string, queryConstraints: QueryConstraint[] = []) {
   const [data, setData] = useState<T[]>([]);
@@ -36,10 +36,10 @@ export function useCollection<T>(collectionName: string, queryConstraints: Query
   return { data, loading, error };
 }
 
-export const useCrowd = () => useCollection<CrowdData>("crowd");
-export const useTransport = () => useCollection<TransportData>("transport");
-export const useFood = () => useCollection<FoodVendor>("food");
-export const useIncidents = () => useCollection<Incident>("incidents");
-export const useVolunteers = () => useCollection<Volunteer>("volunteers");
-export const useVenue = () => useCollection<Venue>("venues");
-export const useAlerts = () => useCollection<Alert>("alerts");
+export const useCrowd = () => useCollection<CrowdData>('crowd');
+export const useTransport = () => useCollection<TransportData>('transport');
+export const useFood = () => useCollection<FoodVendor>('food');
+export const useIncidents = () => useCollection<Incident>('incidents');
+export const useVolunteers = () => useCollection<Volunteer>('volunteers');
+export const useVenue = () => useCollection<Venue>('venues');
+export const useAlerts = () => useCollection<Alert>('alerts');

@@ -3,16 +3,18 @@ Gemini API service for StadiumIQ.
 Handles generation, retries, caching, and prompt sanitization.
 """
 
-import os
-import json
 import asyncio
+import json
 import logging
+import os
 import time
-from typing import Dict, Any, List, Optional, Union
+from typing import Any
+
 from google import genai
 from google.genai import types
-from utils.sanitize import sanitize_prompt
+
 from services.gemini_prompts import get_decision_prompt_and_fallback
+from utils.sanitize import sanitize_prompt
 
 logger = logging.getLogger("gemini_service")
 
@@ -23,10 +25,10 @@ class GeminiService:
     def __init__(self) -> None:
         """Initialize the GeminiService with default configs and empty cache."""
         self.model_name: str = "gemini-2.5-flash"
-        self._client: Optional[genai.Client] = None
+        self._client: genai.Client | None = None
         self.max_retries: int = 2
         self.base_delay: int = 1
-        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._cache: dict[str, dict[str, Any]] = {}
         self._cache_ttl: int = 60  # Cache for 60 seconds
 
     def get_client(self) -> genai.Client:
@@ -45,7 +47,7 @@ class GeminiService:
             return [self._sanitize(item) for item in obj]
         return obj
 
-    def _get_from_cache(self, cache_key: str) -> Optional[Any]:
+    def _get_from_cache(self, cache_key: str) -> Any | None:
         """Fetch an item from the cache if it hasn't expired."""
         if cache_key in self._cache:
             entry = self._cache[cache_key]
@@ -110,7 +112,7 @@ class GeminiService:
                     logger.error("Max retries reached. Returning graceful fallback.")
                     return fallback
 
-    async def get_decision_recommendation(self, context_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def get_decision_recommendation(self, context_data: dict[str, Any]) -> dict[str, Any]:
         """
         Uses Gemini to generate structured JSON recommendations based on context.
         """
@@ -119,7 +121,7 @@ class GeminiService:
         prompt, fallback = get_decision_prompt_and_fallback(mode, context_str)
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
 
-    async def get_fan_assistant_response(self, query: str, user_profile: Dict[str, Any]) -> str:
+    async def get_fan_assistant_response(self, query: str, user_profile: dict[str, Any]) -> str:
         """
         Generate a conversational response for a fan query.
         """
@@ -136,7 +138,7 @@ class GeminiService:
 
     async def get_sustainability_footprint(
         self, travel_mode: str, distance: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Calculate sustainability metrics.
         """
@@ -153,7 +155,7 @@ class GeminiService:
         }
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
 
-    async def generate_pa_announcement(self, message: str, languages: List[str]) -> Dict[str, str]:
+    async def generate_pa_announcement(self, message: str, languages: list[str]) -> dict[str, str]:
         """
         Translate a PA announcement.
         """
@@ -167,7 +169,7 @@ class GeminiService:
         fallback = {lang: "Announcement translation unavailable." for lang in languages}
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
 
-    async def generate_shift_briefing(self, role: str, location: str) -> Dict[str, Any]:
+    async def generate_shift_briefing(self, role: str, location: str) -> dict[str, Any]:
         """
         Generate shift briefing for volunteers.
         """

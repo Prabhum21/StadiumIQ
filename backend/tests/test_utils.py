@@ -1,4 +1,3 @@
-import pytest
 from utils.sanitize import sanitize_prompt
 
 

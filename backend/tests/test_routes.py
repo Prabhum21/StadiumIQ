@@ -1,34 +1,32 @@
-import pytest
-from httpx import AsyncClient, ASGITransport
-from main import app
-from api.routes import gemini_service
 from unittest.mock import AsyncMock, patch
+
+import pytest
+from httpx import ASGITransport, AsyncClient
+
+from api.routes import gemini_service
+from main import app
 
 
 @pytest.fixture
 def mock_gemini():
     with patch.object(
         gemini_service, "get_fan_assistant_response", new_callable=AsyncMock
-    ) as mock_fan:
-        with patch.object(
-            gemini_service, "get_decision_recommendation", new_callable=AsyncMock
-        ) as mock_dec:
-            with patch.object(
-                gemini_service, "get_sustainability_footprint", new_callable=AsyncMock
-            ) as mock_sus:
-                with patch.object(
-                    gemini_service, "generate_pa_announcement", new_callable=AsyncMock
-                ) as mock_ann:
-                    with patch.object(
-                        gemini_service, "generate_shift_briefing", new_callable=AsyncMock
-                    ) as mock_bri:
-                        yield {
-                            "fan": mock_fan,
-                            "decision": mock_dec,
-                            "sustainability": mock_sus,
-                            "announcement": mock_ann,
-                            "briefing": mock_bri,
-                        }
+    ) as mock_fan, patch.object(
+        gemini_service, "get_decision_recommendation", new_callable=AsyncMock
+    ) as mock_dec, patch.object(
+        gemini_service, "get_sustainability_footprint", new_callable=AsyncMock
+    ) as mock_sus, patch.object(
+        gemini_service, "generate_pa_announcement", new_callable=AsyncMock
+    ) as mock_ann, patch.object(
+        gemini_service, "generate_shift_briefing", new_callable=AsyncMock
+    ) as mock_bri:
+        yield {
+            "fan": mock_fan,
+            "decision": mock_dec,
+            "sustainability": mock_sus,
+            "announcement": mock_ann,
+            "briefing": mock_bri,
+        }
 
 
 @pytest.mark.asyncio

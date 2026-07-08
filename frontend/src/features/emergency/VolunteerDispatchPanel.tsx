@@ -1,13 +1,19 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Incident, Volunteer, AIAnalysisResponse } from "@/types";
-import { getApiUrl } from "@/lib/api";
-import { motion } from "framer-motion";
-import { Send, Map, Clock, ShieldAlert } from "lucide-react";
-import { useCrowd, useTransport, useVenue } from "@/hooks/useFirestore";
+import { useState, useEffect } from 'react';
+import { Incident, Volunteer, AIAnalysisResponse } from '@/types';
+import { getApiUrl } from '@/lib/api';
+import { motion } from 'framer-motion';
+import { Send, Map, Clock, ShieldAlert } from 'lucide-react';
+import { useCrowd, useTransport, useVenue } from '@/hooks/useFirestore';
 
-export default function VolunteerDispatchPanel({ incident, volunteers }: { incident: Incident, volunteers: Volunteer[] }) {
+export default function VolunteerDispatchPanel({
+  incident,
+  volunteers,
+}: {
+  incident: Incident;
+  volunteers: Volunteer[];
+}) {
   const { data: crowdData } = useCrowd();
   const { data: transportData } = useTransport();
   const { data: venueData } = useVenue();
@@ -21,20 +27,20 @@ export default function VolunteerDispatchPanel({ incident, volunteers }: { incid
       if (analyzing) return;
       setAnalyzing(true);
       const contextData = {
-        mode: "emergency",
+        mode: 'emergency',
         incident,
-        volunteers: volunteers.filter(v => v.availability === "Available"),
+        volunteers: volunteers.filter((v) => v.availability === 'Available'),
         crowd: crowdData,
         transport: transportData,
         venue: venueData,
-        time: new Date().toISOString()
+        time: new Date().toISOString(),
       };
-      
+
       try {
-        const res = await fetch(getApiUrl("/api/decision"), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ context_data: contextData })
+        const res = await fetch(getApiUrl('/api/decision'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ context_data: contextData }),
         });
         const data = await res.json();
         setAiAnalysis(data.recommendation);
@@ -51,7 +57,9 @@ export default function VolunteerDispatchPanel({ incident, volunteers }: { incid
     return (
       <div className="glass-card p-6 h-[250px] flex flex-col items-center justify-center space-y-4">
         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-zinc-400 text-sm animate-pulse">Calculating optimal dispatch using AI...</p>
+        <p className="text-zinc-400 text-sm animate-pulse">
+          Calculating optimal dispatch using AI...
+        </p>
       </div>
     );
   }
@@ -59,7 +67,7 @@ export default function VolunteerDispatchPanel({ incident, volunteers }: { incid
   if (!aiAnalysis) return null;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="glass-card p-6 relative overflow-hidden"
@@ -70,19 +78,27 @@ export default function VolunteerDispatchPanel({ incident, volunteers }: { incid
         <h3 className="font-semibold text-lg flex items-center gap-2">
           <Send className="text-blue-400" size={20} /> AI Dispatch Strategy
         </h3>
-        <span className={`px-3 py-1 rounded-full text-xs font-bold ${aiAnalysis.priority === 'Critical' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400'}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-bold ${aiAnalysis.priority === 'Critical' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400'}`}
+        >
           {aiAnalysis.priority} Priority
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-          <span className="text-xs text-zinc-400 flex items-center gap-1 mb-1"><Clock size={12}/> Est. Response</span>
+          <span className="text-xs text-zinc-400 flex items-center gap-1 mb-1">
+            <Clock size={12} /> Est. Response
+          </span>
           <span className="font-medium">{aiAnalysis.estimated_response}</span>
         </div>
         <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-          <span className="text-xs text-zinc-400 flex items-center gap-1 mb-1"><ShieldAlert size={12}/> Evacuation</span>
-          <span className={`font-medium ${aiAnalysis.evacuation_required ? 'text-red-400' : 'text-green-400'}`}>
+          <span className="text-xs text-zinc-400 flex items-center gap-1 mb-1">
+            <ShieldAlert size={12} /> Evacuation
+          </span>
+          <span
+            className={`font-medium ${aiAnalysis.evacuation_required ? 'text-red-400' : 'text-green-400'}`}
+          >
             {aiAnalysis.evacuation_required ? 'REQUIRED' : 'Not Required'}
           </span>
         </div>
@@ -92,7 +108,10 @@ export default function VolunteerDispatchPanel({ incident, volunteers }: { incid
         <h4 className="text-xs font-semibold text-zinc-400 mb-2 uppercase">Assigned Volunteers</h4>
         <div className="flex flex-wrap gap-2">
           {aiAnalysis.assigned_volunteers?.map((vol: string, i: number) => (
-            <span key={i} className="bg-blue-600/20 border border-blue-500/30 text-blue-400 px-3 py-1.5 rounded-lg text-sm font-medium">
+            <span
+              key={i}
+              className="bg-blue-600/20 border border-blue-500/30 text-blue-400 px-3 py-1.5 rounded-lg text-sm font-medium"
+            >
               {vol}
             </span>
           ))}
@@ -103,7 +122,10 @@ export default function VolunteerDispatchPanel({ incident, volunteers }: { incid
         <h4 className="text-xs font-semibold text-zinc-400 mb-2 uppercase">Action Plan</h4>
         <ul className="space-y-2">
           {aiAnalysis.recommended_actions?.map((action: string, i: number) => (
-            <li key={i} className="flex items-start gap-3 bg-white/5 p-3 rounded-lg text-sm text-zinc-300">
+            <li
+              key={i}
+              className="flex items-start gap-3 bg-white/5 p-3 rounded-lg text-sm text-zinc-300"
+            >
               <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0"></div>
               {action}
             </li>

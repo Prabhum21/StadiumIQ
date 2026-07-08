@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { AlertTriangle } from "lucide-react";
+import { useEffect } from 'react';
+import { AlertTriangle } from 'lucide-react';
 
 export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error("Global Error Boundary caught:", error);
+    console.error('Global Error Boundary caught:', error);
   }, [error]);
 
   return (
@@ -22,7 +22,8 @@ export default function GlobalError({
       </div>
       <h2 className="text-2xl font-bold tracking-tight mb-2">System Interruption</h2>
       <p className="text-zinc-400 max-w-md mb-8">
-        The StadiumIQ platform encountered an unexpected error. Please refresh the page or try again. Our operations team has been notified.
+        The StadiumIQ platform encountered an unexpected error. Please refresh the page or try
+        again. Our operations team has been notified.
       </p>
       <button
         onClick={() => reset()}

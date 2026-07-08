@@ -1,6 +1,7 @@
-import pytest
+from unittest.mock import AsyncMock, patch
+
 from fastapi.testclient import TestClient
-from unittest.mock import patch, AsyncMock
+
 from main import app
 from services.gemini_service import GeminiService
 

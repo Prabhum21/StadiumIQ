@@ -14,17 +14,17 @@ export interface CrowdData {
   id?: string;
   locationId: string; // e.g. "Gate A"
   peopleCount: number;
-  density: "Low" | "Medium" | "High";
+  density: 'Low' | 'Medium' | 'High';
   queueTime: number; // minutes
   timestamp: number;
 }
 
 export interface TransportData {
   id?: string;
-  type: "Parking" | "Metro" | "Bus" | "Taxi" | "Ride Share" | "Walking";
+  type: 'Parking' | 'Metro' | 'Bus' | 'Taxi' | 'Ride Share' | 'Walking';
   status: string;
   occupancy?: number; // percentage
-  availability?: "Low" | "Medium" | "High";
+  availability?: 'Low' | 'Medium' | 'High';
   timestamp: number;
 }
 
@@ -34,26 +34,33 @@ export interface FoodVendor {
   category: string;
   queueLength: number;
   estimatedWait: number; // minutes
-  availability: "Open" | "Closed" | "Busy";
+  availability: 'Open' | 'Closed' | 'Busy';
 }
 
 export interface Volunteer {
   id?: string;
   name: string;
   role: string;
-  status: "Active" | "Break" | "Offline" | "Responding";
+  status: 'Active' | 'Break' | 'Offline' | 'Responding';
   currentLocation: string;
   assignedIncident?: string | null;
-  availability: "Available" | "Busy";
+  availability: 'Available' | 'Busy';
   skill?: string[];
   medicalCertification?: boolean;
 }
 
 export interface Incident {
   id?: string;
-  type: "Medical" | "Lost Child" | "Fire" | "Security" | "Crowd Surge" | "Suspicious Object" | "Accessibility Assistance";
-  priority: "Low" | "Medium" | "High" | "Critical";
-  status: "Open" | "In Progress" | "Resolved";
+  type:
+    | 'Medical'
+    | 'Lost Child'
+    | 'Fire'
+    | 'Security'
+    | 'Crowd Surge'
+    | 'Suspicious Object'
+    | 'Accessibility Assistance';
+  priority: 'Low' | 'Medium' | 'High' | 'Critical';
+  status: 'Open' | 'In Progress' | 'Resolved';
   assignedVolunteer?: string | null;
   location: string;
   description?: string;
@@ -63,7 +70,7 @@ export interface Incident {
 
 export interface Alert {
   id?: string;
-  type: "Emergency" | "Weather" | "Transport" | "Security" | "Gate" | "Information";
+  type: 'Emergency' | 'Weather' | 'Transport' | 'Security' | 'Gate' | 'Information';
   message: string;
   timestamp: number;
   active: boolean;
@@ -75,7 +82,7 @@ export interface RouteData {
   destination: string;
   walkingTime: number; // minutes
   accessibility: boolean;
-  crowdRisk: "Low" | "Medium" | "High";
+  crowdRisk: 'Low' | 'Medium' | 'High';
   alternativeRoute?: string[];
 }
 

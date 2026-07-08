@@ -2,27 +2,28 @@
 FastAPI routing module. Maps endpoints to underlying AI services and mock data.
 """
 
-from fastapi import APIRouter, Request
 import logging
-from typing import Dict, Any, List
-from services.gemini_service import GeminiService
+
+from fastapi import APIRouter, Request
+
 from api.limiter import limiter
 from schemas.api_models import (
-    ChatRequest,
-    ChatResponse,
-    DecisionRequest,
-    DecisionResponse,
-    CrowdResponse,
-    SustainabilityRequest,
-    SustainabilityResponse,
     AnnouncementRequest,
     BriefingRequest,
     BriefingResponse,
     CapabilitiesResponse,
     Capability,
+    ChatRequest,
+    ChatResponse,
+    CrowdResponse,
+    DecisionRequest,
+    DecisionResponse,
     MultilingualAssistRequest,
     MultilingualAssistResponse,
+    SustainabilityRequest,
+    SustainabilityResponse,
 )
+from services.gemini_service import GeminiService
 
 logger = logging.getLogger("api.routes")
 router = APIRouter()
@@ -108,9 +109,9 @@ async def sustainability_endpoint(
     return SustainabilityResponse(**data)
 
 
-@router.post("/announce", response_model=Dict[str, str])
+@router.post("/announce", response_model=dict[str, str])
 @limiter.limit("10/minute")
-async def announce_endpoint(request: Request, payload: AnnouncementRequest) -> Dict[str, str]:
+async def announce_endpoint(request: Request, payload: AnnouncementRequest) -> dict[str, str]:
     """
     Generates a PA announcement translated into multiple languages.
 
