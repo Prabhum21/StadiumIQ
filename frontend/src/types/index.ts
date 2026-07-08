@@ -95,6 +95,7 @@ export interface OperationsResult {
   predicted_problems: string[];
   volunteer_deployment: string[];
   executive_summary: string;
+  risk_trajectory: string[];
 }
 
 export interface EmergencyResult {

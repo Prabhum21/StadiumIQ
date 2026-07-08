@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -14,10 +15,22 @@ from middleware import SecurityHeadersMiddleware
 
 load_dotenv()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifecycle event to enforce production-readiness checks on startup."""
+    if not os.getenv("PYTEST_CURRENT_TEST") and not os.getenv("GEMINI_API_KEY"):
+        raise RuntimeError(
+            "CRITICAL ERROR: GEMINI_API_KEY is not set in the environment. Halting startup."
+        )
+    yield
+
+
 app = FastAPI(
     title="StadiumIQ AI API",
     description="Backend API for the FIFA World Cup 2026 Smart Stadium Challenge",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Enable CORS for Next.js frontend

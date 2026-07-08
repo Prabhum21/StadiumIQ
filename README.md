@@ -77,7 +77,7 @@ We built StadiumIQ to perfectly map 1-to-1 against the four required capabilitie
 | :--- | :--- | :--- |
 | 👥 **Dynamic Crowd Management** | Live Firestore density telemetry synced to organizers' dashboards for real-time queue distribution. | `GET /api/crowd` |
 | 🧭 **Smart Indoor Navigation** | Accessibility-aware interactive Leaflet map routing fans safely around high-density zones. | `POST /api/decision` |
-| ⚡ **Real-Time Decision Support** | Gemini-powered incident triage outputting structured JSON to dispatch the right volunteers instantly. | `POST /api/decision` |
+| ⚡ **Real-Time Decision Support** | Gemini-powered incident triage forecasting explicit `risk_trajectory` trends to dispatch the right volunteers instantly. | `POST /api/decision` |
 | 🗣️ **Multi-Language Assistance Modules** | Dedicated translation and localization engine answering fan queries and generating PA announcements in any language. | `POST /api/multilingual-assist` |
 
 In addition to the core 4 tracks, we also support:
@@ -139,7 +139,7 @@ flowchart TD
 Data flows automatically: 
 1. **Frontend** captures user context.
 2. **FastAPI** strips malicious payloads and queries **Gemini**.
-3. **Gemini** generates deterministic JSON strategies.
+3. **Gemini** natively generates deterministic JSON strategies leveraging strict `response_schema` validation.
 4. **Firestore** broadcasts changes to all clients instantly.
 
 ---
@@ -147,10 +147,19 @@ Data flows automatically:
 ## 🛡️ Uncompromising Security & Efficiency
 
 We treat security and scale as first-class citizens:
+- **Eager Environment Validation:** A FastAPI `lifespan` event asserts the presence of required AI keys immediately on server startup to fail-fast rather than failing lazily in production.
 - **Prompt Injection Defense:** A custom Regex sanitizer (`backend/utils/sanitize.py`) actively strips control characters and neutralizes "jailbreak" attempts (e.g., *ignore previous instructions*) before they reach Gemini.
 - **GZip Compression:** FastAPI is equipped with `GZipMiddleware` to aggressively compress payloads, saving bandwidth on stadium Wi-Fi.
 - **AI Caching Layer:** Identical prompts within a 60-second window are served from an async memory cache, preventing API rate limits and saving costs.
 - **Security Headers:** Strict CORS, X-XSS-Protection, and Helmet-equivalent middleware.
+
+---
+
+## 🧪 Testing & Verification
+
+StadiumIQ includes a robust, native `pytest` suite ensuring absolute reliability:
+- **Google GenAI Client Mocking:** Tests natively mock `client.aio.models.generate_content` to execute the actual exponential backoff retry loop within the `GeminiService`, validating resilience against simulated API outages.
+- **Strict Structural Typing:** Frontend TypeScript definitions identically match Backend Pydantic models to ensure complete parity across the stack without runtime parsing errors.
 
 ---
 

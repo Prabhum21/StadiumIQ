@@ -13,6 +13,15 @@ from typing import Any
 from google import genai
 from google.genai import types
 
+from schemas.api_models import (
+    AccessibilityResultSchema,
+    BriefingResultSchema,
+    DefaultResultSchema,
+    EmergencyResultSchema,
+    OperationsResultSchema,
+    SustainabilityResultSchema,
+    TransportResultSchema,
+)
 from services.gemini_prompts import (
     get_decision_prompt_and_fallback,
     get_fan_assistant_prompt_and_fallback,
@@ -67,7 +76,9 @@ class GeminiService:
         """Store an item in the cache."""
         self._cache[cache_key] = {"timestamp": time.time(), "data": data}
 
-    async def _generate_with_retry(self, prompt: str, is_json: bool, fallback: Any) -> Any:
+    async def _generate_with_retry(
+        self, prompt: str, is_json: bool, fallback: Any, response_schema: Any = None
+    ) -> Any:
         """
         Generate content using Gemini with exponential backoff retries and caching.
 
@@ -75,13 +86,15 @@ class GeminiService:
             prompt: The string prompt.
             is_json: Whether the expected response is JSON.
             fallback: Data to return if all retries fail.
+            response_schema: Optional Pydantic model or type to strictly enforce output schema.
 
         Returns:
             The generated data or the fallback.
         """
         import hashlib
 
-        cache_key = f"{is_json}_{hashlib.sha256(prompt.encode()).hexdigest()}"
+        schema_key = str(response_schema) if response_schema else "none"
+        cache_key = f"{is_json}_{schema_key}_{hashlib.sha256(prompt.encode()).hexdigest()}"
         cached_response = self._get_from_cache(cache_key)
         if cached_response is not None:
             return cached_response
@@ -92,6 +105,8 @@ class GeminiService:
                 config_kwargs = {"temperature": 0.2} if is_json else {}
                 if is_json:
                     config_kwargs["response_mime_type"] = "application/json"
+                    if response_schema:
+                        config_kwargs["response_schema"] = response_schema
 
                 response = await client.aio.models.generate_content(
                     model=self.model_name,
@@ -127,7 +142,18 @@ class GeminiService:
         mode = context_data.get("mode", "navigation")
         context_str = json.dumps(context_data, indent=2)
         prompt, fallback = get_decision_prompt_and_fallback(mode, context_str)
-        return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
+
+        schemas = {
+            "operations": OperationsResultSchema,
+            "emergency": EmergencyResultSchema,
+            "accessibility": AccessibilityResultSchema,
+            "transport": TransportResultSchema,
+        }
+        schema = schemas.get(mode, DefaultResultSchema)
+
+        return await self._generate_with_retry(
+            prompt, is_json=True, fallback=fallback, response_schema=schema
+        )
 
     async def get_fan_assistant_response(self, query: str, user_profile: dict[str, Any]) -> str:
         """
@@ -145,7 +171,9 @@ class GeminiService:
         Calculate sustainability metrics.
         """
         prompt, fallback = get_sustainability_prompt_and_fallback(travel_mode, distance)
-        return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
+        return await self._generate_with_retry(
+            prompt, is_json=True, fallback=fallback, response_schema=SustainabilityResultSchema
+        )
 
     async def generate_pa_announcement(self, message: str, languages: list[str]) -> dict[str, str]:
         """
@@ -153,11 +181,15 @@ class GeminiService:
         """
         safe_msg = sanitize_prompt(message)
         prompt, fallback = get_pa_announcement_prompt_and_fallback(safe_msg, languages)
-        return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
+        return await self._generate_with_retry(
+            prompt, is_json=True, fallback=fallback, response_schema=dict[str, str]
+        )
 
     async def generate_shift_briefing(self, role: str, location: str) -> dict[str, Any]:
         """
         Generate shift briefing for volunteers.
         """
         prompt, fallback = get_shift_briefing_prompt_and_fallback(role, location)
-        return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
+        return await self._generate_with_retry(
+            prompt, is_json=True, fallback=fallback, response_schema=BriefingResultSchema
+        )

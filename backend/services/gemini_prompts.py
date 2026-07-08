@@ -8,6 +8,7 @@ def get_decision_prompt_and_fallback(mode: str, context_str: str) -> tuple[str, 
         "operations": (
             f"You are the StadiumIQ AI Decision Engine for the FIFA World Cup 2026 Operations Center.\n"
             f"Analyze the following context and provide operational recommendations for organizers.\n"
+            f"Specifically, you must forecast the risk trajectory based on current metrics.\n"
             f"Context:\n{context_str}\n\n"
             f"Provide the output in JSON format matching the schema for Operations."
         ),
@@ -43,6 +44,11 @@ def get_decision_prompt_and_fallback(mode: str, context_str: str) -> tuple[str, 
             "predicted_problems": ["AI Failure"],
             "volunteer_deployment": ["Maintain current posts"],
             "executive_summary": "AI Decision Engine is currently offline. Rely on manual protocols.",
+            "risk_trajectory": [
+                "Current status critical",
+                "Expect crowd surging in 15 mins",
+                "Deploy manual overflow protocols",
+            ],
         },
         "emergency": {
             "priority": "Critical",

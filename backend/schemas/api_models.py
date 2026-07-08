@@ -120,3 +120,83 @@ class MultilingualAssistResponse(BaseModel):
 
     response: str
     language: str
+
+
+# ==========================================
+# INTERNAL GEMINI RESPONSE SCHEMAS
+# ==========================================
+
+
+class OperationsResultSchema(BaseModel):
+    """Schema for Gemini Operations Decision"""
+
+    overall_status: str
+    risk_score: int
+    priority: str
+    recommended_actions: list[str]
+    predicted_problems: list[str]
+    volunteer_deployment: list[str]
+    executive_summary: str
+    risk_trajectory: list[str]
+
+
+class EmergencyResultSchema(BaseModel):
+    """Schema for Gemini Emergency Decision"""
+
+    priority: str
+    assigned_volunteers: list[str]
+    estimated_response: str
+    recommended_actions: list[str]
+    medical_support: bool
+    evacuation_required: bool
+    reasoning: list[str]
+
+
+class AccessibilityResultSchema(BaseModel):
+    """Schema for Gemini Accessibility Decision"""
+
+    recommended_route: list[str]
+    estimated_time: str
+    accessible_facilities: list[str]
+    rest_areas: list[str]
+    warnings: list[str]
+    reasoning: list[str]
+
+
+class TransportResultSchema(BaseModel):
+    """Schema for Gemini Transport Decision"""
+
+    recommended_mode: str
+    travel_time: str
+    cost_estimate: str
+    parking_advice: str
+    reasoning: list[str]
+
+
+class DefaultResultSchema(BaseModel):
+    """Schema for Gemini Default Decision"""
+
+    recommended_route: list[str]
+    estimated_time: str
+    crowd_level: str
+    risk_score: int
+    recommended_food_stop: str | None
+    accessibility_notes: list[str]
+    alternative_route: list[str]
+    reasoning: list[str] | str
+
+
+class SustainabilityResultSchema(BaseModel):
+    """Schema for Gemini Sustainability calculation"""
+
+    footprint_kg: float
+    greenest_alternative: str
+    saving_vs_driving: str
+
+
+class BriefingResultSchema(BaseModel):
+    """Schema for Gemini Briefing generation"""
+
+    duties: list[str]
+    escalation_path: str
+    welcome_phrase: str
