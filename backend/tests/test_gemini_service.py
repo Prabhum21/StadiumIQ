@@ -1,4 +1,3 @@
-import asyncio
 import json
 from unittest.mock import AsyncMock, patch, MagicMock
 
@@ -15,7 +14,7 @@ def gemini_service():
         mock_client_cls.return_value = mock_client
         service = GeminiService()
         service.base_delay = 0  # Speed up tests
-        return service
+        yield service
 
 
 @pytest.mark.asyncio
@@ -60,7 +59,7 @@ async def test_generate_with_retry_failure_fallback(gemini_service):
     mock_generate = gemini_service.get_client().aio.models.generate_content
     mock_generate.side_effect = Exception("API down")
 
-    with patch("services.gemini_service.asyncio.sleep", new_callable=AsyncMock) as mock_sleep:
+    with patch("services.gemini_service.asyncio.sleep", new_callable=AsyncMock):
         response = await gemini_service.get_decision_recommendation({"mode": "operations"})
 
         # It should retry 'max_retries' times. Default is 2, so 3 calls total.
