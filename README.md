@@ -6,8 +6,8 @@ The intelligent operating system for the FIFA World Cup 2026, seamlessly orchest
 
 ## Live Demo
 
-- **Frontend URL:** [Live Demo](#) <!-- Placeholder for live deployment link -->
-- **Backend URL:** [API URL](#) <!-- Placeholder for live API link -->
+- **Frontend URL:** [https://stadium-iq-six.vercel.app/](https://stadium-iq-six.vercel.app/)
+- **Backend URL:** [https://stadiumiq-api-1003181063328.us-central1.run.app/](https://stadiumiq-api-1003181063328.us-central1.run.app/)
 
 
 ---
@@ -99,7 +99,7 @@ flowchart TD
 - **Backend:** Python 3, FastAPI, Pydantic
 - **Database:** Firebase Firestore (Real-time NoSQL)
 - **Authentication:** Firebase Auth (Google & Anonymous)
-- **Cloud:** Google Cloud Run, Vercel/Netlify
+- **Cloud:** Google Cloud Run, Vercel
 - **Maps:** Leaflet, React-Leaflet
 - **AI:** Google `google-genai` SDK (Gemini 2.5 Flash)
 - **Deployment:** Docker, Container Registry
@@ -216,7 +216,7 @@ Data flows automatically via WebSockets; no local emulator is strictly required 
 
 ## Deployment
 
-- **Frontend → Netlify:** Optimized for zero-config CI/CD. Connect your GitHub repository and deploy with build command `npm run build` and output directory `.next`.
+- **Frontend → Vercel:** Optimized for zero-config Next.js CI/CD. Connect your GitHub repository and Vercel will automatically configure the build settings.
 - **Backend → Google Cloud Run:** Containerized via Docker. Deploy using the Google Cloud CLI or automated Cloud Build triggers.
 - **Authentication → Firebase Authentication:** Managed identity platform.
 - **Database → Firestore:** Managed serverless document database.
