@@ -2,6 +2,7 @@
 Gemini API service for StadiumIQ.
 Handles generation, retries, caching, and prompt sanitization.
 """
+
 import os
 import json
 import asyncio
@@ -15,8 +16,10 @@ from services.gemini_prompts import get_decision_prompt_and_fallback
 
 logger = logging.getLogger("gemini_service")
 
+
 class GeminiService:
     """Service layer for interacting with Google Gemini API."""
+
     def __init__(self) -> None:
         """Initialize the GeminiService with default configs and empty cache."""
         self.model_name: str = "gemini-2.5-flash"
@@ -46,28 +49,25 @@ class GeminiService:
         """Fetch an item from the cache if it hasn't expired."""
         if cache_key in self._cache:
             entry = self._cache[cache_key]
-            if time.time() - entry['timestamp'] < self._cache_ttl:
-                return entry['data']
+            if time.time() - entry["timestamp"] < self._cache_ttl:
+                return entry["data"]
             else:
                 del self._cache[cache_key]
         return None
 
     def _set_to_cache(self, cache_key: str, data: Any) -> None:
         """Store an item in the cache."""
-        self._cache[cache_key] = {
-            'timestamp': time.time(),
-            'data': data
-        }
+        self._cache[cache_key] = {"timestamp": time.time(), "data": data}
 
     async def _generate_with_retry(self, prompt: str, is_json: bool, fallback: Any) -> Any:
         """
         Generate content using Gemini with exponential backoff retries and caching.
-        
+
         Args:
             prompt: The string prompt.
             is_json: Whether the expected response is JSON.
             fallback: Data to return if all retries fail.
-            
+
         Returns:
             The generated data or the fallback.
         """
@@ -82,13 +82,13 @@ class GeminiService:
                 config_kwargs = {"temperature": 0.2} if is_json else {}
                 if is_json:
                     config_kwargs["response_mime_type"] = "application/json"
-                    
+
                 response = await client.aio.models.generate_content(
                     model=self.model_name,
                     contents=prompt,
-                    config=types.GenerateContentConfig(**config_kwargs) if config_kwargs else None
+                    config=types.GenerateContentConfig(**config_kwargs) if config_kwargs else None,
                 )
-                
+
                 if is_json:
                     data = json.loads(response.text)
                     if not isinstance(data, dict):
@@ -96,14 +96,16 @@ class GeminiService:
                     result = self._sanitize(data)
                 else:
                     result = self._sanitize(response.text)
-                
+
                 self._set_to_cache(cache_key, result)
                 return result
-                    
+
             except Exception as e:
-                logger.error(f"Gemini API Error (Attempt {attempt + 1}/{self.max_retries + 1}): {e}")
+                logger.error(
+                    f"Gemini API Error (Attempt {attempt + 1}/{self.max_retries + 1}): {e}"
+                )
                 if attempt < self.max_retries:
-                    await asyncio.sleep(self.base_delay * (2 ** attempt))
+                    await asyncio.sleep(self.base_delay * (2**attempt))
                 else:
                     logger.error("Max retries reached. Returning graceful fallback.")
                     return fallback
@@ -132,7 +134,9 @@ class GeminiService:
         fallback_msg = "I am currently experiencing connection issues. Please locate the nearest volunteer for assistance."
         return await self._generate_with_retry(prompt, is_json=False, fallback=fallback_msg)
 
-    async def get_sustainability_footprint(self, travel_mode: str, distance: float) -> Dict[str, Any]:
+    async def get_sustainability_footprint(
+        self, travel_mode: str, distance: float
+    ) -> Dict[str, Any]:
         """
         Calculate sustainability metrics.
         """
@@ -145,7 +149,7 @@ class GeminiService:
         fallback = {
             "footprint_kg": 0.0,
             "greenest_alternative": "Public Transit",
-            "saving_vs_driving": "Unknown due to offline mode."
+            "saving_vs_driving": "Unknown due to offline mode.",
         }
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
 
@@ -160,7 +164,7 @@ class GeminiService:
             f"Message: {safe_msg}\n"
             f"Return a JSON object where keys are language codes (e.g., 'en', 'es') and values are the translated text."
         )
-        fallback = { lang: "Announcement translation unavailable." for lang in languages }
+        fallback = {lang: "Announcement translation unavailable." for lang in languages}
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
 
     async def generate_shift_briefing(self, role: str, location: str) -> Dict[str, Any]:
@@ -176,7 +180,6 @@ class GeminiService:
         fallback = {
             "duties": ["Report to supervisor", "Assist fans"],
             "escalation_path": "Radio control room on Channel 1.",
-            "welcome_phrase": "Welcome to the stadium! How can I help?"
+            "welcome_phrase": "Welcome to the stadium! How can I help?",
         }
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
-

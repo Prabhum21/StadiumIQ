@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 const EmergencyDashboard = dynamic(() => import("@/features/emergency/EmergencyDashboard"), { ssr: false });
 export default function EmergencyPage() {
   return (
@@ -11,9 +12,9 @@ export default function EmergencyPage() {
           <p className="text-zinc-400 text-sm">Crisis Response & Volunteer Dispatch</p>
         </div>
         <div className="flex items-center gap-4">
-          <a href="/" className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors">
+          <Link href="/" className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors">
             Back to Fan App
-          </a>
+          </Link>
         </div>
       </header>
       <main className="flex-1 flex flex-col overflow-hidden relative">

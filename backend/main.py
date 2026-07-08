@@ -11,7 +11,7 @@ load_dotenv()
 app = FastAPI(
     title="StadiumIQ AI API",
     description="Backend API for the FIFA World Cup 2026 Smart Stadium Challenge",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Enable CORS for Next.js frontend
@@ -36,13 +36,14 @@ from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.responses import JSONResponse
 
+
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Limit request body size to 1MB
-        content_length = request.headers.get('content-length')
+        content_length = request.headers.get("content-length")
         if content_length and int(content_length) > 1024 * 1024:
             return JSONResponse({"detail": "Payload too large"}, status_code=413)
-        
+
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
@@ -52,7 +53,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "no-referrer"
         return response
 
+
 app.add_middleware(SecurityHeadersMiddleware)
+
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
@@ -61,10 +64,12 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     """
     return JSONResponse(
         status_code=500,
-        content={"error_code": "INTERNAL_ERROR", "message": "An unexpected error occurred."}
+        content={"error_code": "INTERNAL_ERROR", "message": "An unexpected error occurred."},
     )
 
+
 app.include_router(routes.router, prefix="/api")
+
 
 @app.get("/", response_model=Dict[str, str])
 def read_root() -> Dict[str, str]:

@@ -54,7 +54,9 @@ export default function OrganizerDashboard() {
   // Initial fetch when data is ready
   useEffect(() => {
     if (!crowdLoading && crowdData.length > 0 && !aiAnalysis && !analyzing) {
-      fetchAIAnalysis();
+      queueMicrotask(() => {
+        fetchAIAnalysis();
+      });
     }
   }, [crowdLoading, crowdData.length, aiAnalysis, analyzing, fetchAIAnalysis]);
 
