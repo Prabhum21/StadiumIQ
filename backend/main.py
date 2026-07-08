@@ -1,5 +1,5 @@
-import os
 from contextlib import asynccontextmanager
+import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -12,7 +12,6 @@ from slowapi.errors import RateLimitExceeded
 from api import routes
 from api.limiter import limiter
 from middleware import SecurityHeadersMiddleware, TelemetryMiddleware
-
 from utils.logging import setup_logging
 
 load_dotenv()

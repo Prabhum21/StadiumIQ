@@ -35,9 +35,8 @@ from services.gemini_prompts import (
     get_shift_briefing_prompt_and_fallback,
     get_sustainability_prompt_and_fallback,
 )
-from utils.sanitize import sanitize_prompt
-
 from utils.metrics import metrics_collector
+from utils.sanitize import sanitize_prompt
 
 
 class OfflineEngine:

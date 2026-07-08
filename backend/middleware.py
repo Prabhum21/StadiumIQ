@@ -5,12 +5,14 @@ Enforces HTTP security headers and request body size limits
 to protect against common web vulnerabilities.
 """
 
+import logging
 import time
 import uuid
-import logging
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+
 from utils.metrics import metrics_collector
 
 logger = logging.getLogger("middleware.telemetry")

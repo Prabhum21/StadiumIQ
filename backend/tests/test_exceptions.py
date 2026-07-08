@@ -3,12 +3,12 @@ Unit tests for StadiumIQ custom exception hierarchy.
 """
 
 from utils.exceptions import (
-    StadiumIQException,
     GeminiAPIException,
-    ValidationException,
-    RateLimitExceededException,
-    UnauthorizedException,
     NotFoundException,
+    RateLimitExceededException,
+    StadiumIQException,
+    UnauthorizedException,
+    ValidationException,
 )
 
 

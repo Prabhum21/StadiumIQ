@@ -3,8 +3,10 @@ Tests for additional endpoint logic and edge cases in StadiumIQ API routing.
 """
 
 from unittest.mock import AsyncMock, patch
+
+from httpx import ASGITransport, AsyncClient
 import pytest
-from httpx import AsyncClient, ASGITransport
+
 from main import app
 
 
