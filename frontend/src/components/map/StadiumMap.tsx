@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { useVenue, useCrowd } from '@/hooks/useFirestore';
+import { useCrowd } from '@/hooks/useFirestore';
 import { CrowdData } from '@/types';
 import Legend from './Legend';
 
@@ -28,7 +28,6 @@ export default React.memo(function StadiumMap({
 }: {
   onLocationClick?: (loc: string) => void;
 }) {
-  const { data: venues } = useVenue();
   const { data: crowdData } = useCrowd();
 
   // Approximate coordinates for Lusail Stadium

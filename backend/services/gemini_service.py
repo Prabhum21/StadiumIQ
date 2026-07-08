@@ -76,6 +76,30 @@ class GeminiService:
         """Store an item in the cache."""
         self._cache[cache_key] = {"timestamp": time.time(), "data": data}
 
+    def _check_cache(self, cache_key: str) -> Any | None:
+        cached_response = self._get_from_cache(cache_key)
+        if cached_response is not None:
+            return cached_response
+        return None
+
+    def _build_api_config(self, is_json: bool, response_schema: Any = None) -> dict[str, Any]:
+        config_kwargs = {"temperature": 0.2} if is_json else {}
+        if is_json:
+            config_kwargs["response_mime_type"] = "application/json"
+            if response_schema:
+                config_kwargs["response_schema"] = response_schema
+        return config_kwargs
+
+    def _parse_api_response(self, response: Any, is_json: bool) -> Any:
+        if is_json:
+            data = json.loads(response.text)
+            if not isinstance(data, dict):
+                raise ValueError("AI Response is not a JSON object")
+            result = self._sanitize(data)
+        else:
+            result = self._sanitize(response.text)
+        return result
+
     async def _generate_with_retry(
         self, prompt: str, is_json: bool, fallback: Any, response_schema: Any = None
     ) -> Any:
@@ -95,18 +119,15 @@ class GeminiService:
 
         schema_key = str(response_schema) if response_schema else "none"
         cache_key = f"{is_json}_{schema_key}_{hashlib.sha256(prompt.encode()).hexdigest()}"
-        cached_response = self._get_from_cache(cache_key)
+
+        cached_response = self._check_cache(cache_key)
         if cached_response is not None:
             return cached_response
 
         for attempt in range(self.max_retries + 1):
             try:
                 client = self.get_client()
-                config_kwargs = {"temperature": 0.2} if is_json else {}
-                if is_json:
-                    config_kwargs["response_mime_type"] = "application/json"
-                    if response_schema:
-                        config_kwargs["response_schema"] = response_schema
+                config_kwargs = self._build_api_config(is_json, response_schema)
 
                 response = await client.aio.models.generate_content(
                     model=self.model_name,
@@ -114,13 +135,7 @@ class GeminiService:
                     config=types.GenerateContentConfig(**config_kwargs) if config_kwargs else None,
                 )
 
-                if is_json:
-                    data = json.loads(response.text)
-                    if not isinstance(data, dict):
-                        raise ValueError("AI Response is not a JSON object")
-                    result = self._sanitize(data)
-                else:
-                    result = self._sanitize(response.text)
+                result = self._parse_api_response(response, is_json)
 
                 self._set_to_cache(cache_key, result)
                 return result

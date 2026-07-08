@@ -44,6 +44,7 @@ export function Header({
         </div>
         <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
           <div className="w-8 h-8 rounded-full bg-zinc-800 border border-white/10 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`https://ui-avatars.com/api/?name=${user.displayName || 'User'}&background=0D8ABC&color=fff`}
               alt="User"

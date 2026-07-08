@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { RefreshCcw, Activity, Info } from 'lucide-react';
+import { RefreshCcw, Activity } from 'lucide-react';
 
 import { OperationsResult } from '@/types';
 

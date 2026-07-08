@@ -4,13 +4,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { seedDatabaseIfEmpty } from '@/services/firestore/seed';
-import {
-  useCrowd,
-  useIncidents,
-  useVolunteers,
-  useTransport,
-  useAlerts,
-} from '@/hooks/useFirestore';
+import { useCrowd, useIncidents, useVolunteers, useAlerts } from '@/hooks/useFirestore';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import dynamic from 'next/dynamic';
 

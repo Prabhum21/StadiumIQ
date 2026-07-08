@@ -1,6 +1,6 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useCollection } from '../src/hooks/useFirestore';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 
 jest.mock('firebase/firestore', () => ({
   collection: jest.fn(),

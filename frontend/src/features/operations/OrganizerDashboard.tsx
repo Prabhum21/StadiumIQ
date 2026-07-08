@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { useAuth } from '@/context/AuthContext';
 import {
   useCrowd,
   useIncidents,
@@ -16,10 +14,9 @@ import OperationalBriefingCard from './OperationalBriefingCard';
 import RiskMeter from './RiskMeter';
 import IncidentTimeline from './IncidentTimeline';
 import PredictiveAISection from './PredictiveAISection';
-import { Users, AlertTriangle, BriefcaseMedical, ShieldAlert, Bus, Car } from 'lucide-react';
+import { Users, AlertTriangle, BriefcaseMedical, ShieldAlert, Car } from 'lucide-react';
 
 export default function OrganizerDashboard() {
-  const { user } = useAuth();
   const { data: crowdData, loading: crowdLoading } = useCrowd();
   const { data: incidentsData } = useIncidents();
   const { data: volunteersData } = useVolunteers();
@@ -55,7 +52,7 @@ export default function OrganizerDashboard() {
     } finally {
       setAnalyzing(false);
     }
-  }, [crowdData, transportData, volunteersData, incidentsData, venueData]);
+  }, [crowdData, transportData, volunteersData, incidentsData, venueData, analyzing]);
 
   // Initial fetch when data is ready
   useEffect(() => {
