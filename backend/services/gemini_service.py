@@ -1,29 +1,39 @@
+"""
+Gemini API service for StadiumIQ.
+Handles generation, retries, caching, and prompt sanitization.
+"""
 import os
 import json
 import asyncio
 import logging
 import time
+from typing import Dict, Any, List, Optional, Union
 from google import genai
 from google.genai import types
 from utils.sanitize import sanitize_prompt
+from services.gemini_prompts import get_decision_prompt_and_fallback
 
 logger = logging.getLogger("gemini_service")
 
 class GeminiService:
-    def __init__(self):
-        self.model_name = "gemini-2.5-flash"
-        self._client = None
-        self.max_retries = 2
-        self.base_delay = 1
-        self._cache = {}
-        self._cache_ttl = 60  # Cache for 60 seconds
+    """Service layer for interacting with Google Gemini API."""
+    def __init__(self) -> None:
+        """Initialize the GeminiService with default configs and empty cache."""
+        self.model_name: str = "gemini-2.5-flash"
+        self._client: Optional[genai.Client] = None
+        self.max_retries: int = 2
+        self.base_delay: int = 1
+        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._cache_ttl: int = 60  # Cache for 60 seconds
 
-    def get_client(self):
+    def get_client(self) -> genai.Client:
+        """Lazily initialize and return the Gemini client."""
         if not self._client:
             self._client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
         return self._client
 
-    def _sanitize(self, obj):
+    def _sanitize(self, obj: Any) -> Any:
+        """Recursively sanitizes dicts, lists, and strings to prevent XSS in responses."""
         if isinstance(obj, str):
             return obj.replace("<", "&lt;").replace(">", "&gt;")
         elif isinstance(obj, dict):
@@ -32,7 +42,8 @@ class GeminiService:
             return [self._sanitize(item) for item in obj]
         return obj
 
-    def _get_from_cache(self, cache_key: str):
+    def _get_from_cache(self, cache_key: str) -> Optional[Any]:
+        """Fetch an item from the cache if it hasn't expired."""
         if cache_key in self._cache:
             entry = self._cache[cache_key]
             if time.time() - entry['timestamp'] < self._cache_ttl:
@@ -41,13 +52,25 @@ class GeminiService:
                 del self._cache[cache_key]
         return None
 
-    def _set_to_cache(self, cache_key: str, data):
+    def _set_to_cache(self, cache_key: str, data: Any) -> None:
+        """Store an item in the cache."""
         self._cache[cache_key] = {
             'timestamp': time.time(),
             'data': data
         }
 
-    async def _generate_with_retry(self, prompt: str, is_json: bool, fallback):
+    async def _generate_with_retry(self, prompt: str, is_json: bool, fallback: Any) -> Any:
+        """
+        Generate content using Gemini with exponential backoff retries and caching.
+        
+        Args:
+            prompt: The string prompt.
+            is_json: Whether the expected response is JSON.
+            fallback: Data to return if all retries fail.
+            
+        Returns:
+            The generated data or the fallback.
+        """
         cache_key = f"{is_json}_{hash(prompt)}"
         cached_response = self._get_from_cache(cache_key)
         if cached_response is not None:
@@ -85,95 +108,19 @@ class GeminiService:
                     logger.error("Max retries reached. Returning graceful fallback.")
                     return fallback
 
-    async def get_decision_recommendation(self, context_data: dict) -> dict:
+    async def get_decision_recommendation(self, context_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Uses Gemini to generate structured JSON recommendations based on context.
         """
         mode = context_data.get("mode", "navigation")
         context_str = json.dumps(context_data, indent=2)
-
-        prompts = {
-            "operations": (
-                f"You are the StadiumIQ AI Decision Engine for the FIFA World Cup 2026 Operations Center.\n"
-                f"Analyze the following context and provide operational recommendations for organizers.\n"
-                f"Context:\n{context_str}\n\n"
-                f"Provide the output in JSON format matching the schema for Operations."
-            ),
-            "emergency": (
-                f"You are the StadiumIQ AI Emergency Command Center.\n"
-                f"Analyze the emergency context and dispatch the best volunteers.\n"
-                f"Context:\n{context_str}\n\n"
-                f"Provide the output in JSON format matching the schema for Emergency."
-            ),
-            "accessibility": (
-                f"You are the StadiumIQ AI Accessibility Assistant for the FIFA World Cup 2026.\n"
-                f"Analyze the context and provide tailored route recommendations.\n"
-                f"Context:\n{context_str}\n"
-            ),
-            "transport": (
-                f"You are the StadiumIQ AI Transport Assistant.\n"
-                f"Analyze the live transport context and recommend travel options.\n"
-                f"Context:\n{context_str}\n"
-            ),
-            "default": (
-                f"You are the StadiumIQ AI Decision Engine for the FIFA World Cup 2026.\n"
-                f"Analyze the context and provide operational and navigation recommendations.\n"
-                f"Context:\n{context_str}\n"
-            )
-        }
-
-        fallbacks = {
-            "operations": {
-                "overall_status": "Critical",
-                "risk_score": 100,
-                "priority": "Critical",
-                "recommended_actions": ["Escalate to manual operations.", "Restart AI system."],
-                "predicted_problems": ["AI Failure"],
-                "volunteer_deployment": ["Maintain current posts"],
-                "executive_summary": "AI Decision Engine is currently offline. Rely on manual protocols."
-            },
-            "emergency": {
-                "priority": "Critical",
-                "assigned_volunteers": [],
-                "estimated_response": "N/A",
-                "recommended_actions": ["Manual Dispatch Required immediately due to AI offline."],
-                "medical_support": True,
-                "evacuation_required": False,
-                "reasoning": ["AI Failure. Proceed with fallback protocol."]
-            },
-            "accessibility": {
-                "recommended_route": [],
-                "estimated_time": "N/A",
-                "accessible_facilities": [],
-                "rest_areas": [],
-                "warnings": ["AI Offline. Please ask a volunteer for accessible routing."],
-                "reasoning": ["API Failure"]
-            },
-            "transport": {
-                "recommended_mode": "Unknown",
-                "travel_time": "N/A",
-                "cost_estimate": "N/A",
-                "parking_advice": "No live data available.",
-                "reasoning": ["AI Offline. Please follow static signage."]
-            },
-            "default": {
-                "recommended_route": [],
-                "estimated_time": "N/A",
-                "crowd_level": "High",
-                "risk_score": 100,
-                "recommended_food_stop": None,
-                "accessibility_notes": [],
-                "alternative_route": [],
-                "reasoning": "Fallback: Escalate to manual review due to API failure."
-            }
-        }
-
-        prompt = prompts.get(mode, prompts["default"])
-        fallback = fallbacks.get(mode, fallbacks["default"])
-            
+        prompt, fallback = get_decision_prompt_and_fallback(mode, context_str)
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
 
-    async def get_fan_assistant_response(self, query: str, user_profile: dict) -> str:
+    async def get_fan_assistant_response(self, query: str, user_profile: Dict[str, Any]) -> str:
+        """
+        Generate a conversational response for a fan query.
+        """
         safe_query = sanitize_prompt(query)
         prompt = (
             f"You are the StadiumIQ Fan Assistant.\n"
@@ -185,7 +132,10 @@ class GeminiService:
         fallback_msg = "I am currently experiencing connection issues. Please locate the nearest volunteer for assistance."
         return await self._generate_with_retry(prompt, is_json=False, fallback=fallback_msg)
 
-    async def get_sustainability_footprint(self, travel_mode: str, distance: float) -> dict:
+    async def get_sustainability_footprint(self, travel_mode: str, distance: float) -> Dict[str, Any]:
+        """
+        Calculate sustainability metrics.
+        """
         prompt = (
             f"You are the StadiumIQ Sustainability Engine.\n"
             f"Calculate the estimated carbon footprint for a fan traveling to the stadium.\n"
@@ -199,7 +149,10 @@ class GeminiService:
         }
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
 
-    async def generate_pa_announcement(self, message: str, languages: list) -> dict:
+    async def generate_pa_announcement(self, message: str, languages: List[str]) -> Dict[str, str]:
+        """
+        Translate a PA announcement.
+        """
         safe_msg = sanitize_prompt(message)
         prompt = (
             f"You are the StadiumIQ Announcement System.\n"
@@ -210,7 +163,10 @@ class GeminiService:
         fallback = { lang: "Announcement translation unavailable." for lang in languages }
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
 
-    async def generate_shift_briefing(self, role: str, location: str) -> dict:
+    async def generate_shift_briefing(self, role: str, location: str) -> Dict[str, Any]:
+        """
+        Generate shift briefing for volunteers.
+        """
         prompt = (
             f"You are the StadiumIQ Volunteer Operations Engine.\n"
             f"Generate a shift briefing for a volunteer.\n"
@@ -223,3 +179,4 @@ class GeminiService:
             "welcome_phrase": "Welcome to the stadium! How can I help?"
         }
         return await self._generate_with_retry(prompt, is_json=True, fallback=fallback)
+

@@ -8,8 +8,8 @@
 
 [![Live Demo](https://img.shields.io/badge/▶_Live_Demo-stadium--iq--six.vercel.app-blueviolet?style=for-the-badge)](https://stadium-iq-six.vercel.app/)
 
-![Tests](https://img.shields.io/badge/tests-119_passing-brightgreen)
-![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+[![CI](https://github.com/Prabhum21/StadiumIQ/actions/workflows/ci.yml/badge.svg)](https://github.com/Prabhum21/StadiumIQ/actions/workflows/ci.yml)
+![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen)
 ![WCAG](<https://img.shields.io/badge/WCAG-2.1_AA_(axe_verified)-blueviolet>)
 ![FastAPI](https://img.shields.io/badge/backend-FastAPI-009688?logo=fastapi&logoColor=white)
 ![Next.js](https://img.shields.io/badge/frontend-Next.js_14-black?logo=next.js&logoColor=white)
@@ -27,12 +27,13 @@
 ## 📑 Table of Contents
 
 - [The Challenge & Our Solution](#-the-challenge--our-solution)
-- [Feature Showcase (All 8 Capabilities)](#-feature-showcase-all-8-capabilities)
+- [Feature Showcase (Alignment with Challenge Tracks)](#-feature-showcase-alignment-with-challenge-tracks)
 - [Walkthrough](#-walkthrough)
 - [Architecture & AI Workflow](#-architecture--ai-workflow)
 - [Uncompromising Security & Efficiency](#-uncompromising-security--efficiency)
 - [Accessibility (WCAG 2.1 AA)](#-accessibility-wcag-21-aa)
 - [API Reference](#-api-reference)
+- [Documentation](#-documentation)
 - [Quick Start](#-quick-start)
 
 ---
@@ -68,21 +69,25 @@ Our approach is to unify the disparate systems of stadium management into a sing
 
 ---
 
-## ✨ Feature Showcase (All 8 Capabilities)
+## ✨ Feature Showcase (Alignment with Challenge Tracks)
 
-We implemented **every capability area** from the brief as a live, tested feature:
+We built StadiumIQ to perfectly map 1-to-1 against the four required capabilities for the **Smart Stadiums & Tournament Operations** track. You can verify this mapping programmatically via our dedicated `GET /api/capabilities` endpoint.
 
-| # | Capability Area | Feature Description | Endpoint |
-| :-: | :--- | :--- | :--- |
-| 1 | 🗣️ **Multilingual Assistance** | Gemini-powered fan concierge answering stadium queries in any language. | `POST /api/chat` |
-| 2 | 🧭 **Navigation** | Real-time map routing avoiding highly dense crowd zones. | `POST /api/decision` |
-| 3 | 👥 **Crowd Management** | Live Firestore density telemetry synced to organizers' dashboards. | `GET /api/crowd` |
-| 4 | ⚡ **Real-Time Decision Support** | Incident triage outputting structured JSON for instant volunteer dispatch. | `POST /api/decision` |
-| 5 | 📢 **Operational Intelligence** | One-click **multilingual PA announcements** generated instantly. | `POST /api/announce` |
-| 6 | 🦺 **Volunteer Enablement** | Role-specific **shift briefings** (duties, escalation paths). | `POST /api/briefing` |
-| 7 | 🌱 **Sustainability & Transport** | Travel **carbon-footprint** calculation and green travel nudges. | `POST /api/sustainability` |
-| 8 | 🗓️ **Match-Day Planning** | AI-crafted personalized itineraries based on fan context. | `POST /api/chat` |
-| ♿ | **Accessibility** | **WCAG 2.1 AA** compliant dashboard with `aria-live` and step-free routing. | *cross-cutting* |
+| Capability Track | Feature Implementation | Endpoint |
+| :--- | :--- | :--- |
+| 👥 **Dynamic Crowd Management** | Live Firestore density telemetry synced to organizers' dashboards for real-time queue distribution. | `GET /api/crowd` |
+| 🧭 **Smart Indoor Navigation** | Accessibility-aware interactive Leaflet map routing fans safely around high-density zones. | `POST /api/decision` |
+| ⚡ **Real-Time Decision Support** | Gemini-powered incident triage outputting structured JSON to dispatch the right volunteers instantly. | `POST /api/decision` |
+| 🗣️ **Multi-Language Assistance Modules** | Dedicated translation and localization engine answering fan queries and generating PA announcements in any language. | `POST /api/multilingual-assist` |
+
+In addition to the core 4 tracks, we also support:
+| Additional Feature | Description | Endpoint |
+| :--- | :--- | :--- |
+| 🌱 **Sustainability & Transport** | Travel carbon-footprint calculation and green travel nudges. | `POST /api/sustainability` |
+| 🦺 **Volunteer Enablement** | Role-specific shift briefings (duties, escalation paths). | `POST /api/briefing` |
+| 📢 **Operational Intelligence** | Automated PA announcement translation. | `POST /api/announce` |
+| 🗓️ **Match-Day Planning** | AI-crafted personalized itineraries based on fan context. | `POST /api/chat` |
+| ♿ **Accessibility** | **WCAG 2.1 AA** compliant dashboard with `aria-live` and step-free routing. | *cross-cutting* |
 
 ---
 
@@ -121,12 +126,12 @@ We implemented **every capability area** from the brief as a live, tested featur
 
 ```mermaid
 flowchart TD
-    Users[Fans / Volunteers] --> NextJS[Next.js App Router]
-    NextJS <--> Firestore[(Firestore Real-time WebSockets)]
-    NextJS --> FastAPI[FastAPI Backend (GZip + Rate Limited)]
-    FastAPI --> Sanitizer[Prompt Injection Sanitizer]
-    Sanitizer --> Gemini[Google Gemini 2.5]
-    Gemini --> JSON[Structured JSON Cache]
+    Users["Fans / Volunteers"] --> NextJS["Next.js App Router"]
+    NextJS <--> Firestore[("Firestore Real-time WebSockets")]
+    NextJS --> FastAPI["FastAPI Backend (GZip + Rate Limited)"]
+    FastAPI --> Sanitizer["Prompt Injection Sanitizer"]
+    Sanitizer --> Gemini["Google Gemini 2.5"]
+    Gemini --> JSON["Structured JSON Cache"]
     JSON --> FastAPI
     FastAPI --> NextJS
 ```
@@ -162,12 +167,23 @@ StadiumIQ is built for *everyone*:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
+| `GET` | `/api/capabilities` | Returns machine-verifiable capability alignment. |
+| `POST` | `/api/multilingual-assist` | Dedicated translation and localization engine. |
 | `POST` | `/api/chat` | Conversational fan assistant (Q&A, match planning) |
 | `POST` | `/api/decision` | Operational triage (structured JSON fallback) |
 | `GET` | `/api/crowd` | Retrieve live crowd density telemetry |
 | `POST` | `/api/sustainability` | Calculate carbon footprints & green travel alternatives |
 | `POST` | `/api/announce` | Generate multilingual PA announcements |
 | `POST` | `/api/briefing` | Create specific volunteer shift duties & escalations |
+
+---
+
+## 📚 Documentation
+
+For deeper dives into our systems, please review our comprehensive documentation:
+- [Architecture & Data Flow](docs/ARCHITECTURE.md)
+- [Challenge Alignment Map](docs/ALIGNMENT.md)
+- [Security & Trust](SECURITY.md)
 
 ---
 

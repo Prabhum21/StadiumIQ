@@ -54,6 +54,16 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(SecurityHeadersMiddleware)
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Global exception handler that returns structured JSON.
+    """
+    return JSONResponse(
+        status_code=500,
+        content={"error_code": "INTERNAL_ERROR", "message": "An unexpected error occurred."}
+    )
+
 app.include_router(routes.router, prefix="/api")
 
 @app.get("/", response_model=Dict[str, str])
