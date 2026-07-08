@@ -20,11 +20,13 @@ class BriefingRequest(BaseModel):
 
 logger = logging.getLogger("api.routes")
 router = APIRouter()
-gemini_service = GeminiService()
+
+def get_gemini_service() -> GeminiService:
+    return GeminiService()
 
 @router.post("/chat", response_model=Dict[str, Any])
 @limiter.limit("20/minute")
-async def chat_endpoint(request: Request, payload: ChatRequest) -> Dict[str, Any]:
+async def chat_endpoint(request: Request, payload: ChatRequest, gemini_service: GeminiService = Depends(get_gemini_service)) -> Dict[str, Any]:
     """
     Endpoint for the Fan Assistant chat interaction.
     """
@@ -42,7 +44,7 @@ async def chat_endpoint(request: Request, payload: ChatRequest) -> Dict[str, Any
 
 @router.post("/decision", response_model=Dict[str, Any])
 @limiter.limit("10/minute")
-async def decision_endpoint(request: Request, payload: DecisionRequest) -> Dict[str, Any]:
+async def decision_endpoint(request: Request, payload: DecisionRequest, gemini_service: GeminiService = Depends(get_gemini_service)) -> Dict[str, Any]:
     """
     Endpoint for the StadiumIQ AI Decision Engine.
     """
@@ -74,7 +76,7 @@ async def get_crowd_metrics(request: Request) -> Dict[str, Any]:
 
 @router.post("/sustainability", response_model=Dict[str, Any])
 @limiter.limit("10/minute")
-async def sustainability_endpoint(request: Request, payload: SustainabilityRequest) -> Dict[str, Any]:
+async def sustainability_endpoint(request: Request, payload: SustainabilityRequest, gemini_service: GeminiService = Depends(get_gemini_service)) -> Dict[str, Any]:
     try:
         data = await gemini_service.get_sustainability_footprint(payload.travel_mode, payload.distance)
         return data
@@ -84,7 +86,7 @@ async def sustainability_endpoint(request: Request, payload: SustainabilityReque
 
 @router.post("/announce", response_model=Dict[str, Any])
 @limiter.limit("10/minute")
-async def announce_endpoint(request: Request, payload: AnnouncementRequest) -> Dict[str, Any]:
+async def announce_endpoint(request: Request, payload: AnnouncementRequest, gemini_service: GeminiService = Depends(get_gemini_service)) -> Dict[str, Any]:
     try:
         data = await gemini_service.generate_pa_announcement(payload.message, payload.languages)
         return data
@@ -94,7 +96,7 @@ async def announce_endpoint(request: Request, payload: AnnouncementRequest) -> D
 
 @router.post("/briefing", response_model=Dict[str, Any])
 @limiter.limit("10/minute")
-async def briefing_endpoint(request: Request, payload: BriefingRequest) -> Dict[str, Any]:
+async def briefing_endpoint(request: Request, payload: BriefingRequest, gemini_service: GeminiService = Depends(get_gemini_service)) -> Dict[str, Any]:
     try:
         data = await gemini_service.generate_shift_briefing(payload.role, payload.location)
         return data
