@@ -64,7 +64,7 @@ async def test_sustainability_endpoint(mock_gemini):
     mock_gemini["sustainability"].return_value = {
         "footprint_kg": 5.0,
         "greenest_alternative": "walk",
-        "saving_vs_driving": "2kg"
+        "saving_vs_driving": "2kg",
     }
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         response = await ac.post("/api/sustainability", json={"travel_mode": "car", "distance": 10})
@@ -72,7 +72,7 @@ async def test_sustainability_endpoint(mock_gemini):
     assert response.json() == {
         "footprint_kg": 5.0,
         "greenest_alternative": "walk",
-        "saving_vs_driving": "2kg"
+        "saving_vs_driving": "2kg",
     }
 
 
@@ -90,7 +90,7 @@ async def test_briefing_endpoint(mock_gemini):
     mock_gemini["briefing"].return_value = {
         "duties": [],
         "escalation_path": "call supervisor",
-        "welcome_phrase": "hello"
+        "welcome_phrase": "hello",
     }
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         response = await ac.post("/api/briefing", json={"role": "guard", "location": "gate a"})
@@ -98,5 +98,5 @@ async def test_briefing_endpoint(mock_gemini):
     assert response.json() == {
         "duties": [],
         "escalation_path": "call supervisor",
-        "welcome_phrase": "hello"
+        "welcome_phrase": "hello",
     }

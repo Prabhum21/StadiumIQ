@@ -58,7 +58,10 @@ def test_chat_endpoint_exception(mock_chat):
     mock_chat.side_effect = Exception("Internal Error")
     response = client.post("/api/chat", json={"message": "Hello", "user_profile": {}})
     assert response.status_code == 500
-    assert response.json() == {"error_code": "INTERNAL_ERROR", "message": "An unexpected error occurred."}
+    assert response.json() == {
+        "error_code": "INTERNAL_ERROR",
+        "message": "An unexpected error occurred.",
+    }
 
 
 @patch("api.routes.gemini_service.get_decision_recommendation", new_callable=AsyncMock)
@@ -66,7 +69,10 @@ def test_decision_endpoint_exception(mock_decision):
     mock_decision.side_effect = Exception("Internal Error")
     response = client.post("/api/decision", json={"context_data": {"mode": "security"}})
     assert response.status_code == 500
-    assert response.json() == {"error_code": "INTERNAL_ERROR", "message": "An unexpected error occurred."}
+    assert response.json() == {
+        "error_code": "INTERNAL_ERROR",
+        "message": "An unexpected error occurred.",
+    }
 
 
 def test_gemini_service_sanitize():
