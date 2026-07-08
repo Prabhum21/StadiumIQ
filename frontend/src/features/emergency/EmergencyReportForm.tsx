@@ -51,7 +51,7 @@ export default function EmergencyReportForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-xs font-medium text-zinc-400 mb-1">Emergency Type</label>
-          <select value={type} onChange={e => setType(e.target.value as any)} className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white [&>option]:bg-zinc-900">
+          <select value={type} onChange={e => setType(e.target.value as Incident["type"])} className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white [&>option]:bg-zinc-900">
             <option>Medical</option>
             <option>Lost Child</option>
             <option>Security</option>
@@ -69,7 +69,7 @@ export default function EmergencyReportForm() {
           </div>
           <div>
             <label className="block text-xs font-medium text-zinc-400 mb-1">Severity</label>
-            <select value={priority} onChange={e => setPriority(e.target.value as any)} className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white [&>option]:bg-zinc-900">
+            <select value={priority} onChange={e => setPriority(e.target.value as Incident["priority"])} className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white [&>option]:bg-zinc-900">
               <option>Low</option>
               <option>Medium</option>
               <option>High</option>

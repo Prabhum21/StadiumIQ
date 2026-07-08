@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { useVenue, useCrowd } from "@/hooks/useFirestore";
+import { CrowdData } from "@/types";
 import Legend from "./Legend";
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -40,7 +41,7 @@ export default React.memo(function StadiumMap({ onLocationClick }: { onLocationC
   };
 
   const crowdMap = React.useMemo(() => {
-    const map: Record<string, any> = {};
+    const map: Record<string, CrowdData> = {};
     crowdData.forEach(c => { map[c.locationId] = c; });
     return map;
   }, [crowdData]);

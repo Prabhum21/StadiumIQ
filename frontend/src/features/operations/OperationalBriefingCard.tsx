@@ -1,9 +1,23 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import { RefreshCcw, Activity, Info } from "lucide-react";
 
-export default function OperationalBriefingCard({ analysis, loading, onRefresh }: any) {
+interface AnalysisData {
+  executive_summary?: string;
+  recommended_actions?: string[];
+  priority?: string;
+  overall_status?: string;
+}
+
+interface OperationalBriefingCardProps {
+  analysis?: AnalysisData | null;
+  loading: boolean;
+  onRefresh: () => void;
+}
+
+const OperationalBriefingCard: React.FC<OperationalBriefingCardProps> = ({ analysis, loading, onRefresh }) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -70,4 +84,6 @@ export default function OperationalBriefingCard({ analysis, loading, onRefresh }
       )}
     </motion.div>
   );
-}
+};
+
+export default React.memo(OperationalBriefingCard);

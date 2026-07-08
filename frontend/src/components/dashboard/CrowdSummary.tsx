@@ -12,12 +12,12 @@ interface CrowdSummaryProps {
 
 export function CrowdSummary({ crowdData }: CrowdSummaryProps) {
   return (
-    <div className="flex flex-col h-full bg-white/5 border border-white/10 rounded-xl p-6 relative overflow-hidden">
+    <div className="flex flex-col h-full bg-white/5 border border-white/10 rounded-xl p-6 relative overflow-hidden" aria-live="polite" aria-label="Crowd Summary Panel">
       <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
         <Users size={24} className="text-blue-400"/> Crowd Summary
       </h3>
       <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
-        <div className="p-4 bg-black/40 rounded-lg border border-white/5">
+        <div className="p-4 bg-black/40 rounded-lg border border-white/5" aria-label="Density Overview">
           <p className="text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Density Overview</p>
           <div className="flex items-center gap-4">
             <div className="flex-1 text-center p-2 bg-red-500/10 rounded-lg border border-red-500/20">

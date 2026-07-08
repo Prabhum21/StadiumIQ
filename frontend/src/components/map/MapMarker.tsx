@@ -1,18 +1,21 @@
 "use client";
 
+import React from "react";
 import dynamic from "next/dynamic";
+import { CrowdData } from "@/types";
+
 const Marker = dynamic(() => import("react-leaflet").then(m => m.Marker), { ssr: false });
 const Popup = dynamic(() => import("react-leaflet").then(m => m.Popup), { ssr: false });
 
 interface MapMarkerProps {
   position: [number, number];
   name: string;
-  crowdData?: any;
+  crowdData?: CrowdData;
   color?: string;
   onClick?: () => void;
 }
 
-export default function MapMarker({ position, name, crowdData, color = "gray", onClick }: MapMarkerProps) {
+const MapMarker: React.FC<MapMarkerProps> = ({ position, name, crowdData, color = "gray", onClick }) => {
   return (
     <Marker position={position} eventHandlers={{ click: () => onClick && onClick() }}>
       <Popup className="glass-popup">
@@ -29,7 +32,8 @@ export default function MapMarker({ position, name, crowdData, color = "gray", o
           )}
           <button 
             onClick={onClick}
-            className="w-full mt-3 bg-blue-500 text-white py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+            className="w-full mt-3 bg-blue-500 text-white py-1 rounded text-sm hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            aria-label={`Select ${name} as current location`}
           >
             Select Location
           </button>
@@ -37,4 +41,6 @@ export default function MapMarker({ position, name, crowdData, color = "gray", o
       </Popup>
     </Marker>
   );
-}
+};
+
+export default React.memo(MapMarker);

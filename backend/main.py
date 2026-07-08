@@ -1,6 +1,7 @@
 from typing import Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from api import routes
 import os
 from dotenv import load_dotenv
@@ -21,6 +22,8 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "Accept"],
 )
+
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded

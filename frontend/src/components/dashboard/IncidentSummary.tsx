@@ -15,12 +15,12 @@ interface IncidentSummaryProps {
 
 export function IncidentSummary({ activeIncidents, incidentsData }: IncidentSummaryProps) {
   return (
-    <div className="flex flex-col h-full bg-white/5 border border-white/10 rounded-xl p-6 relative overflow-hidden">
+    <div className="flex flex-col h-full bg-white/5 border border-white/10 rounded-xl p-6 relative overflow-hidden" aria-live="assertive" aria-label="Incident Summary Panel">
       <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
         <ShieldAlert size={24} className="text-red-400"/> Incident Summary
       </h3>
       <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
-        <div className="p-4 bg-black/40 rounded-lg border border-white/5">
+        <div className="p-4 bg-black/40 rounded-lg border border-white/5" aria-label="Emergency Status">
           <p className="text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Emergency Status</p>
           <div className="flex items-center gap-3">
             <div className={`w-3 h-3 rounded-full ${activeIncidents > 0 ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`}></div>
