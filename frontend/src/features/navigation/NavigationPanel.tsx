@@ -178,7 +178,9 @@ export default function NavigationPanel({ selectedLocation }: { selectedLocation
 
             <div className="bg-white/5 border border-white/10 p-4 rounded-lg">
               <h4 className="font-semibold text-zinc-300 text-xs mb-1">AI Reasoning</h4>
-              <p className="text-sm text-zinc-400 leading-relaxed">{response.reasoning}</p>
+              <ul className="text-sm text-zinc-400 leading-relaxed list-disc pl-4">
+                {(Array.isArray(response.reasoning) ? response.reasoning : (typeof response.reasoning === 'string' ? [response.reasoning] : [])).map((r, i) => <li key={i}>{r}</li>)}
+              </ul>
             </div>
 
             {response.accessibility_notes && response.accessibility_notes.length > 0 && (

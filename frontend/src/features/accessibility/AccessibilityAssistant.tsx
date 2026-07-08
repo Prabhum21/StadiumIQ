@@ -144,7 +144,7 @@ export default function AccessibilityAssistant({ selectedLocation }: { selectedL
                 {response.recommended_route?.map((step: string, i: number) => (
                   <span key={i} className="flex items-center gap-2">
                     <span className="bg-white/10 px-2 py-1 rounded text-white">{step}</span>
-                    {i < response.recommended_route.length - 1 && <span className="text-zinc-500">→</span>}
+                    {i < response.recommended_route!.length - 1 && <span className="text-zinc-500">→</span>}
                   </span>
                 ))}
               </div>
@@ -165,7 +165,7 @@ export default function AccessibilityAssistant({ selectedLocation }: { selectedL
               </div>
             </div>
 
-            {response.warnings?.length > 0 && (
+            {response.warnings && response.warnings.length > 0 && (
               <div className="bg-orange-500/10 border border-orange-500/20 p-3 rounded-lg">
                 <h4 className="text-xs font-semibold text-orange-400 flex items-center gap-1 mb-1"><AlertTriangle size={14}/> Warnings</h4>
                 <ul className="text-sm text-orange-300 list-disc pl-4">
@@ -177,7 +177,7 @@ export default function AccessibilityAssistant({ selectedLocation }: { selectedL
             <div className="bg-white/5 p-3 rounded-lg">
               <h4 className="text-xs font-semibold text-zinc-400 mb-1">AI Reasoning</h4>
               <ul className="text-xs text-zinc-500 list-disc pl-4">
-                {response.reasoning?.map((r: string, i: number) => <li key={i}>{r}</li>)}
+                {(Array.isArray(response.reasoning) ? response.reasoning : (typeof response.reasoning === 'string' ? [response.reasoning] : [])).map((r, i) => <li key={i}>{r}</li>)}
               </ul>
             </div>
           </motion.div>

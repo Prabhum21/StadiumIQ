@@ -118,7 +118,7 @@ export default function TransportIntelligence() {
             <div className="bg-white/5 p-3 rounded-lg">
               <h4 className="text-xs font-semibold text-zinc-400 mb-1">AI Reasoning</h4>
               <ul className="text-xs text-zinc-500 list-disc pl-4">
-                {response.reasoning?.map((r: string, i: number) => <li key={i}>{r}</li>)}
+                {(Array.isArray(response.reasoning) ? response.reasoning : (typeof response.reasoning === 'string' ? [response.reasoning] : [])).map((r, i) => <li key={i}>{r}</li>)}
               </ul>
             </div>
           </motion.div>

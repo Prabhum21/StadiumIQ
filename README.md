@@ -8,32 +8,7 @@ The intelligent operating system for the FIFA World Cup 2026, seamlessly orchest
 
 - **Frontend URL:** [Live Demo](#) <!-- Placeholder for live deployment link -->
 - **Backend URL:** [API URL](#) <!-- Placeholder for live API link -->
-- **Demo Video:** [Demo Video](#) <!-- Placeholder for YouTube/Loom link -->
 
----
-
-## Screenshots
-
-<!-- Login -->
-![Login Placeholder](https://via.placeholder.com/800x450.png?text=Login)
-
-<!-- Dashboard -->
-![Dashboard Placeholder](https://via.placeholder.com/800x450.png?text=Operations+Dashboard)
-
-<!-- Operations Center -->
-![Operations Center Placeholder](https://via.placeholder.com/800x450.png?text=Operations+Center)
-
-<!-- Emergency Command -->
-![Emergency Command Placeholder](https://via.placeholder.com/800x450.png?text=Emergency+Command)
-
-<!-- Accessibility -->
-![Accessibility Placeholder](https://via.placeholder.com/800x450.png?text=Accessibility+Assistant)
-
-<!-- Transport Intelligence -->
-![Transport Intelligence Placeholder](https://via.placeholder.com/800x450.png?text=Transport+Intelligence)
-
-<!-- Navigation -->
-![Navigation Placeholder](https://via.placeholder.com/800x450.png?text=Smart+Navigation)
 
 ---
 
