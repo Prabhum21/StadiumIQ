@@ -8,11 +8,10 @@ export const seedDatabaseIfEmpty = async () => {
     const snapshot = await getDocs(venuesRef);
     
     if (!snapshot.empty) {
-      console.log("Database already seeded.");
       return;
     }
     
-    console.log("Seeding database with realistic mock data...");
+    // Seeding database with realistic mock data...
 
     // 1. Seed Venue
     const lusailVenue: Venue = {
@@ -85,7 +84,7 @@ export const seedDatabaseIfEmpty = async () => {
       await setDoc(doc(collection(db, "alerts")), a);
     }
 
-    console.log("Database seeded successfully.");
+    // Database seeded successfully.
   } catch (error) {
     console.error("Error seeding database:", error);
   }

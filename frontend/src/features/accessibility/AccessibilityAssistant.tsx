@@ -72,7 +72,7 @@ export default function AccessibilityAssistant({ selectedLocation }: { selectedL
       setResponse(data.recommendation);
     } catch (err: unknown) {
       if (err instanceof Error && err.name === "AbortError") {
-        console.log("Fetch aborted");
+        // Fetch aborted
       } else {
         console.error(err);
       }
