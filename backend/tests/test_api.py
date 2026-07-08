@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, AsyncMock
 from main import app
+from services.gemini_service import GeminiService
 
 client = TestClient(app)
 
@@ -55,3 +56,15 @@ def test_decision_endpoint_exception(mock_decision):
     response = client.post("/api/decision", json={"context_data": {"mode": "security"}})
     assert response.status_code == 500
     assert response.json() == {"detail": "Internal Server Error"}
+
+def test_gemini_service_sanitize():
+    service = GeminiService()
+    # Test string sanitization
+    assert service._sanitize("<script>alert(1)</script>") == "&lt;script&gt;alert(1)&lt;/script&gt;"
+    # Test dictionary sanitization
+    assert service._sanitize({"msg": "<b>bold</b>"}) == {"msg": "&lt;b&gt;bold&lt;/b&gt;"}
+    # Test list sanitization
+    assert service._sanitize(["<i>italic</i>"]) == ["&lt;i&gt;italic&lt;/i&gt;"]
+    # Test primitive passthrough
+    assert service._sanitize(123) == 123
+    assert service._sanitize(None) is None

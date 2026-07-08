@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useVenue, useCrowd } from "@/hooks/useFirestore";
 import { getApiUrl } from "@/lib/api";
 import { AIAnalysisResponse } from "@/types";
 import { Accessibility, MapPin, Navigation2, AlertTriangle, Eye, Ear, Baby, ShieldPlus } from "lucide-react";
 
+/**
+ * AccessibilityAssistant provides tailored AI recommendations for fans with specific accessibility needs.
+ * @param selectedLocation Optional initial location
+ */
 export default function AccessibilityAssistant({ selectedLocation }: { selectedLocation?: string }) {
   const { data: venues } = useVenue();
   const { data: crowdData } = useCrowd();
@@ -37,7 +41,11 @@ export default function AccessibilityAssistant({ selectedLocation }: { selectedL
     };
   }, []);
 
-  const handleGenerate = async () => {
+  const activeVenue = useMemo(() => {
+    return venues && venues.length > 0 ? venues[0] : null;
+  }, [venues]);
+
+  const handleGenerate = useCallback(async () => {
     if (loading) return; // Prevent duplicate requests
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -56,7 +64,7 @@ export default function AccessibilityAssistant({ selectedLocation }: { selectedL
         stroller: needsStroller
       },
       request: { currentLocation, destination },
-      venue: venues.length > 0 ? venues[0] : null,
+      venue: activeVenue,
       crowd: crowdData,
       time: new Date().toISOString()
     };
@@ -68,18 +76,19 @@ export default function AccessibilityAssistant({ selectedLocation }: { selectedL
         body: JSON.stringify({ context_data: contextData }),
         signal: abortControllerRef.current.signal
       });
+      if (!res.ok) throw new Error("Network response was not ok");
       const data = await res.json();
       setResponse(data.recommendation);
     } catch (err: unknown) {
       if (err instanceof Error && err.name === "AbortError") {
-        // Fetch aborted
+        // Fetch aborted gracefully
       } else {
-        console.error(err);
+        console.error("Error generating accessible route:", err);
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading, needsWheelchair, needsVisual, needsHearing, needsStroller, currentLocation, destination, activeVenue, crowdData]);
 
   return (
     <div className="flex flex-col h-full bg-white/5 border border-white/10 rounded-xl p-6 relative overflow-hidden">
@@ -186,3 +195,4 @@ export default function AccessibilityAssistant({ selectedLocation }: { selectedL
     </div>
   );
 }
+

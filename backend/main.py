@@ -1,10 +1,11 @@
-import os
-from dotenv import load_dotenv
-load_dotenv()
-
+from typing import Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api import routes
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(
     title="StadiumIQ AI API",
@@ -52,6 +53,6 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 app.include_router(routes.router, prefix="/api")
 
-@app.get("/")
-def read_root():
+@app.get("/", response_model=Dict[str, str])
+def read_root() -> Dict[str, str]:
     return {"status": "ok", "message": "StadiumIQ AI Backend is running"}
