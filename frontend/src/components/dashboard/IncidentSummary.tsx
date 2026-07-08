@@ -2,7 +2,7 @@ import { ShieldAlert } from "lucide-react";
 
 interface IncidentData {
   status: string;
-  timestamp: string;
+  timestamp: number;
   type: string;
   priority: string;
   location: string;

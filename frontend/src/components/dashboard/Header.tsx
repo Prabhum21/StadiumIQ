@@ -1,11 +1,11 @@
 import { Menu, LogOut } from "lucide-react";
-import type { User } from "@/context/AuthContext";
+import type { UserProfile } from "@/context/AuthContext";
 
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   activeIncidents: number;
-  user: User;
+  user: UserProfile;
   logout: () => void;
 }
 
