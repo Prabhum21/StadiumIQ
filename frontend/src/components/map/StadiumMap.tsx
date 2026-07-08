@@ -21,7 +21,8 @@ const DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-export default function StadiumMap({ onLocationClick }: { onLocationClick?: (loc: string) => void }) {
+import React from "react";
+export default React.memo(function StadiumMap({ onLocationClick }: { onLocationClick?: (loc: string) => void }) {
   const { data: venues } = useVenue();
   const { data: crowdData } = useCrowd();
   
@@ -38,8 +39,14 @@ export default function StadiumMap({ onLocationClick }: { onLocationClick?: (loc
     "Medical Room A": [25.4205, 51.4910]
   };
 
+  const crowdMap = React.useMemo(() => {
+    const map: Record<string, any> = {};
+    crowdData.forEach(c => { map[c.locationId] = c; });
+    return map;
+  }, [crowdData]);
+
   const getDensityColor = (locationId: string) => {
-    const crowd = crowdData.find(c => c.locationId === locationId);
+    const crowd = crowdMap[locationId];
     if (!crowd) return "gray";
     if (crowd.density === "Low") return "green";
     if (crowd.density === "Medium") return "orange";
@@ -47,7 +54,7 @@ export default function StadiumMap({ onLocationClick }: { onLocationClick?: (loc
   };
 
   const getCrowdDetails = (locationId: string) => {
-    return crowdData.find(c => c.locationId === locationId);
+    return crowdMap[locationId];
   };
 
   // Ensure map is only rendered on client
@@ -97,4 +104,4 @@ export default function StadiumMap({ onLocationClick }: { onLocationClick?: (loc
       <Legend />
     </div>
   );
-}
+});

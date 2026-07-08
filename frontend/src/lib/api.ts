@@ -1,9 +1,9 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { ENV } from "@/config/env";
 
 export function getApiUrl(path: string): string {
-  if (!API_URL) {
-    console.error("Configuration Error: NEXT_PUBLIC_API_URL environment variable is missing.");
-    // Fallback for local development if forgot to set env var, but warn loudly.
+  const API_URL = ENV.api.baseUrl;
+  if (!API_URL || API_URL.includes("mock")) {
+    console.error("Configuration Error: API_URL environment variable is missing.");
     return `http://localhost:8000${path}`;
   }
   

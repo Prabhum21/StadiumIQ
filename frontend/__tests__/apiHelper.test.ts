@@ -1,29 +1,38 @@
 import { getApiUrl } from '../src/lib/api';
+import { ENV } from '../src/config/env';
+
+jest.mock('../src/config/env', () => ({
+  ENV: {
+    api: {
+      baseUrl: 'http://localhost:8000',
+    }
+  }
+}));
 
 describe('getApiUrl', () => {
-  const originalEnv = process.env;
+  let consoleSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    jest.resetModules();
-    process.env = { ...originalEnv };
+    ENV.api.baseUrl = 'http://localhost:8000';
+    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  afterAll(() => {
-    process.env = originalEnv;
+  afterEach(() => {
+    consoleSpy.mockRestore();
   });
 
   it('should use NEXT_PUBLIC_API_URL when available', () => {
-    process.env.NEXT_PUBLIC_API_URL = 'https://api.stadiumiq.com';
+    ENV.api.baseUrl = 'https://api.stadiumiq.com';
     expect(getApiUrl('/test')).toBe('https://api.stadiumiq.com/test');
   });
 
   it('should fallback to localhost when NEXT_PUBLIC_API_URL is missing', () => {
-    delete process.env.NEXT_PUBLIC_API_URL;
+    ENV.api.baseUrl = 'mock';
     expect(getApiUrl('/test')).toBe('http://localhost:8000/test');
   });
 
   it('should prevent double slashes in paths', () => {
-    process.env.NEXT_PUBLIC_API_URL = 'https://api.stadiumiq.com/';
+    ENV.api.baseUrl = 'https://api.stadiumiq.com/';
     expect(getApiUrl('/test')).toBe('https://api.stadiumiq.com/test');
   });
 });

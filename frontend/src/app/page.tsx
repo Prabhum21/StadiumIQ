@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Activity, Users, ShieldAlert, Navigation, Settings, Menu, LogIn, User as UserIcon, LogOut, Train, ShieldPlus } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { seedDatabaseIfEmpty } from "@/services/firestore/seed";
 import { useCrowd, useIncidents, useVolunteers, useTransport, useAlerts } from "@/hooks/useFirestore";
@@ -24,6 +24,12 @@ export default function Dashboard() {
   const { data: incidentsData, loading: incidentsLoading } = useIncidents();
   const { data: volunteersData, loading: volunteersLoading } = useVolunteers();
   const { data: alertsData, loading: alertsLoading } = useAlerts();
+
+  // Calculate Metrics from Firestore (Memoized)
+  const totalAttendance = useMemo(() => crowdData.reduce((acc, curr) => acc + curr.peopleCount, 0), [crowdData]);
+  const activeIncidents = useMemo(() => incidentsData.filter(i => i.status !== "Resolved").length, [incidentsData]);
+  const avgQueueTime = useMemo(() => crowdData.length > 0 ? Math.round(crowdData.reduce((acc, curr) => acc + curr.queueTime, 0) / crowdData.length) : 0, [crowdData]);
+  const availableVolunteers = useMemo(() => volunteersData.filter(v => v.availability === "Available").length, [volunteersData]);
 
   // Seed DB on mount
   useEffect(() => {
@@ -71,12 +77,6 @@ export default function Dashboard() {
     );
   }
 
-  // Calculate Metrics from Firestore
-  const totalAttendance = crowdData.reduce((acc, curr) => acc + curr.peopleCount, 0);
-  const activeIncidents = incidentsData.filter(i => i.status !== "Resolved").length;
-  const avgQueueTime = crowdData.length > 0 ? Math.round(crowdData.reduce((acc, curr) => acc + curr.queueTime, 0) / crowdData.length) : 0;
-  const availableVolunteers = volunteersData.filter(v => v.availability === "Available").length;
-
   const dataLoading = crowdLoading || incidentsLoading || volunteersLoading || alertsLoading;
 
   return (
@@ -102,19 +102,20 @@ export default function Dashboard() {
             { id: "accessibility", icon: ShieldPlus, label: "Accessibility", active: activeTab === "accessibility" },
             { id: "transport", icon: Train, label: "Transport", active: activeTab === "transport" },
           ].map((item) => (
-            <div 
+            <button 
               key={item.id} 
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer transition-all ${item.active ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'hover:bg-white/5 text-zinc-400 hover:text-zinc-200'}`}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${item.active ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'hover:bg-white/5 text-zinc-400 hover:text-zinc-200'}`}
+              aria-current={item.active ? "page" : undefined}
             >
               <div className="flex items-center gap-3">
-                <item.icon size={18} />
+                <item.icon size={18} aria-hidden="true" />
                 <span className="font-medium text-sm">{item.label}</span>
               </div>
               {item.badge && (
-                <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{item.badge}</span>
+                <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full" aria-label={`${item.badge} notifications`}>{item.badge}</span>
               )}
-            </div>
+            </button>
           ))}
         </nav>
 
@@ -136,8 +137,13 @@ export default function Dashboard() {
         {/* Header */}
         <header className="h-20 glass border-b border-white/10 px-8 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-4">
-            <button className="md:hidden text-zinc-400 hover:text-white" onClick={() => setSidebarOpen(!sidebarOpen)}>
-              <Menu size={24} />
+            <button 
+              className="md:hidden text-zinc-400 hover:text-white" 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label={sidebarOpen ? "Close menu" : "Open menu"}
+              aria-expanded={sidebarOpen}
+            >
+              <Menu size={24} aria-hidden="true" />
             </button>
             <div>
               <h2 className="text-2xl font-semibold">Live Dashboard</h2>
