@@ -1,1 +1,3 @@
-# Empty init file
+"""API routing and rate limiting for StadiumIQ backend."""
+
+__all__ = ["routes", "limiter"]

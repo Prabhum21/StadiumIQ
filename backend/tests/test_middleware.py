@@ -21,3 +21,9 @@ def test_payload_too_large():
     response = client.post("/api/chat", json={}, headers=headers)
     assert response.status_code == 413
     assert response.json() == {"detail": "Payload too large"}
+
+
+def test_request_id_header():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "X-Request-ID" in response.headers

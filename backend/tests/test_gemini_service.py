@@ -83,3 +83,39 @@ async def test_caching_behavior(gemini_service):
     resp2 = await gemini_service.get_fan_assistant_response("Unique query", {})
     assert resp2 == "Cached Response"
     assert mock_generate.call_count == 1
+
+
+def test_offline_engine_crowd_prediction(gemini_service):
+    res = gemini_service.offline_engine.get_crowd_prediction("North Gate")
+    assert res["name"] == "North Gate"
+    assert res["predicted_surge"] is False
+    assert "estimated_density" in res
+
+
+def test_offline_engine_classify_incident(gemini_service):
+    res = gemini_service.offline_engine.classify_incident("There is a fire in Section A")
+    assert res["priority"] == "Critical"
+    assert res["evacuation_required"] is True
+
+    res2 = gemini_service.offline_engine.classify_incident("Minor lost child report")
+    assert res2["priority"] == "Medium"
+    assert res2["evacuation_required"] is False
+
+
+def test_offline_engine_navigation_suggestions(gemini_service):
+    res = gemini_service.offline_engine.get_navigation_suggestions("Gate A", "Gate B")
+    assert "recommended_route" in res
+    assert len(res["recommended_route"]) > 0
+
+
+def test_offline_engine_emergency_response(gemini_service):
+    res = gemini_service.offline_engine.get_emergency_response("Fire")
+    assert res["priority"] == "Critical"
+    assert res["evacuation_required"] is True
+
+
+def test_offline_engine_estimate_risk(gemini_service):
+    res = gemini_service.offline_engine.estimate_risk({"mode": "operations"})
+    assert res["overall_status"] == "Critical"
+
+    assert "risk_trajectory" in res

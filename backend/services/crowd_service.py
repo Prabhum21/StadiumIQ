@@ -1,3 +1,11 @@
+"""
+Mock crowd zone data for StadiumIQ.
+
+Provides simulated crowd density metrics for stadium zones. In production,
+this would be replaced with live telemetry from IoT sensors.
+"""
+
+
 def get_zones() -> list[dict]:
     """Return mock crowd zones."""
     return [

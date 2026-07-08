@@ -199,3 +199,13 @@ async def multilingual_assist_endpoint(
         query=query, user_profile={"language": payload.target_language}
     )
     return MultilingualAssistResponse(response=response_text, language=payload.target_language)
+
+
+@router.get("/metrics", response_model=dict)
+def get_metrics_endpoint() -> dict:
+    """
+    Exposes system and application performance metrics.
+    """
+    from utils.metrics import metrics_collector
+
+    return metrics_collector.get_report()

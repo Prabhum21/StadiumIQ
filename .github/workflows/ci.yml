@@ -22,17 +22,27 @@ jobs:
         run: |
           cd backend
           pip install -r requirements.txt
-          pip install ruff black pytest-cov
+          pip install ruff black isort bandit pytest-cov
 
       - name: Run Black formatter check
         run: |
           cd backend
           black --check .
 
+      - name: Run Isort check
+        run: |
+          cd backend
+          isort --check-only .
+
       - name: Run Ruff linter
         run: |
           cd backend
           ruff check .
+
+      - name: Run Bandit security audit
+        run: |
+          cd backend
+          bandit -r . -x ./tests,./venv
 
       - name: Run Pytest with Coverage
         run: |
@@ -63,10 +73,21 @@ jobs:
       - name: Run Prettier check
         run: |
           cd frontend
-          npx prettier --check .
+          npm run format:check
 
-      - name: Run Jest/RTL Tests
+      - name: Run TypeScript type-check
         run: |
           cd frontend
-          npm test
+          npm run type-check
+
+      - name: Run Jest/RTL Tests with coverage
+        run: |
+          cd frontend
+          npm run test:coverage
+
+      - name: Build Next.js project
+        run: |
+          cd frontend
+          npm run build
+
 

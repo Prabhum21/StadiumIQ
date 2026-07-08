@@ -1,6 +1,66 @@
+"""
+Security middleware for StadiumIQ backend.
+
+Enforces HTTP security headers and request body size limits
+to protect against common web vulnerabilities.
+"""
+
+import time
+import uuid
+import logging
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from utils.metrics import metrics_collector
+
+logger = logging.getLogger("middleware.telemetry")
+
+
+class TelemetryMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        request_id = str(uuid.uuid4())
+        # Store in request state for downstream handlers
+        request.state.request_id = request_id
+
+        start_time = time.time()
+        is_error = False
+        try:
+            response = await call_next(request)
+            if response.status_code >= 400:
+                is_error = True
+            response.headers["X-Request-ID"] = request_id
+            return response
+        except Exception as exc:
+            is_error = True
+            # Log exception details with request ID
+            logger.error(
+                f"Unhandled exception during request processing: {exc}",
+                extra={
+                    "request_id": request_id,
+                    "request_path": request.url.path,
+                    "error_details": str(exc),
+                },
+            )
+            raise
+        finally:
+            duration = time.time() - start_time
+            duration_ms = duration * 1000
+
+            # Record endpoint statistics
+            metrics_collector.record_request(
+                endpoint=request.url.path, duration=duration, is_error=is_error
+            )
+
+            # Log request telemetry in JSON format
+            logger.info(
+                f"HTTP {request.method} {request.url.path} processed in {duration_ms:.2f}ms",
+                extra={
+                    "request_id": request_id,
+                    "request_path": request.url.path,
+                    "latency_ms": duration_ms,
+                    "severity": "INFO" if not is_error else "ERROR",
+                },
+            )
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):

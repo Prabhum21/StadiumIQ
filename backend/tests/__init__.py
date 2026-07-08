@@ -1,1 +1,1 @@
-# Empty init
+"""Backend test suite for StadiumIQ."""

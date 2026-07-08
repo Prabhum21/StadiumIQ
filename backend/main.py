@@ -11,9 +11,12 @@ from slowapi.errors import RateLimitExceeded
 
 from api import routes
 from api.limiter import limiter
-from middleware import SecurityHeadersMiddleware
+from middleware import SecurityHeadersMiddleware, TelemetryMiddleware
+
+from utils.logging import setup_logging
 
 load_dotenv()
+setup_logging()
 
 
 @asynccontextmanager
@@ -36,7 +39,9 @@ app = FastAPI(
 # Enable CORS for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000").split(","),
+    allow_origins=os.getenv(
+        "CORS_ORIGINS", "http://localhost:3000,https://stadium-iq-six.vercel.app"
+    ).split(","),
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "Accept"],
@@ -47,8 +52,25 @@ app.add_middleware(GZipMiddleware, minimum_size=500)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-
+app.add_middleware(TelemetryMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
+
+
+from utils.exceptions import StadiumIQException
+
+
+@app.exception_handler(StadiumIQException)
+async def stadium_iq_exception_handler(request: Request, exc: StadiumIQException) -> JSONResponse:
+    """
+    Exception handler for all custom StadiumIQ exceptions.
+    """
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error_code": exc.error_code,
+            "message": exc.message,
+        },
+    )
 
 
 @app.exception_handler(Exception)
@@ -56,6 +78,10 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     """
     Global exception handler that returns structured JSON.
     """
+    # Log unhandled exceptions
+    import logging
+
+    logging.getLogger("main.error").error(f"Global exception caught: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={

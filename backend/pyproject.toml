@@ -2,6 +2,11 @@
 line-length = 100
 target-version = ['py311']
 
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["api", "services", "schemas", "utils", "middleware"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"
@@ -9,3 +14,11 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "C90", "N", "B", "UP", "ARG", "PTH", "SIM", "RUF"]
 ignore = ["E501", "ARG001"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["api", "services", "schemas", "utils", "middleware"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = "auto"
+addopts = "--cov=. --cov-report=term --cov-report=xml --cov-report=html"

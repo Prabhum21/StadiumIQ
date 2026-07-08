@@ -89,3 +89,13 @@ def test_gemini_service_sanitize():
     # Test primitive passthrough
     assert service._sanitize(123) == 123
     assert service._sanitize(None) is None
+
+
+def test_metrics_endpoint():
+    response = client.get("/api/metrics")
+    assert response.status_code == 200
+    data = response.json()
+    assert "memory_usage_mb" in data
+    assert "cpu_usage_percent" in data
+    assert "cache_hit_rate" in data
+    assert "avg_latency_ms" in data

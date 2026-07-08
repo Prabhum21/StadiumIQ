@@ -19,9 +19,12 @@ A high-throughput Python API handling the heavy lifting of AI orchestration.
 - **Performance:** Asynchronous routes (`async def`) run on Uvicorn.
 - **Optimization:** Global `GZipMiddleware` compresses heavy JSON payloads (like dense PA text or large itineraries) for congested stadium networks.
 - **Resilience:** Integrates exponential backoff retries when interfacing with external LLM APIs.
+- **Telemetry Middleware:** Integrates request-level latency measurements, unique UUID request tracing, and counts tracked by a centralized metrics collector.
+- **Structured JSON Logging:** Implements a JSON formatter for production-ready log exports.
 
 ### 4. The AI Core (Google Gemini 2.5)
 Gemini Flash 2.5 powers the deterministic operational decisions and natural language interactions.
+- **Deterministic Offline Fallback:** Implements an `OfflineEngine` to dynamically supply matching JSON schemas if the external Gemini API calls fail, preventing application downtime.
 - We utilize strict Pydantic schemas (translated to `response_mime_type="application/json"` in the Gemini API call) to force the AI into returning machine-parsable JSON for automated dispatch systems.
 - A custom caching layer sits in front of Gemini: identical queries within a 60-second window are served from memory, preventing rate limits and reducing costs during simultaneous crowd queries (e.g., thousands of fans asking "Where is Gate B?").
 

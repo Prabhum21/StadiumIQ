@@ -174,25 +174,35 @@ StadiumIQ is built for *everyone*:
 
 ## 🔌 API Reference
 
-| Method | Endpoint | Purpose |
-| --- | --- | --- |
-| `GET` | `/api/capabilities` | Returns machine-verifiable capability alignment. |
-| `POST` | `/api/multilingual-assist` | Dedicated translation and localization engine. |
-| `POST` | `/api/chat` | Conversational fan assistant (Q&A, match planning) |
-| `POST` | `/api/decision` | Operational triage (structured JSON fallback) |
-| `GET` | `/api/crowd` | Retrieve live crowd density telemetry |
-| `POST` | `/api/sustainability` | Calculate carbon footprints & green travel alternatives |
-| `POST` | `/api/announce` | Generate multilingual PA announcements |
-| `POST` | `/api/briefing` | Create specific volunteer shift duties & escalations |
+| Method | Endpoint | Purpose | Response Format |
+| --- | --- | --- | --- |
+| `GET` | `/api/capabilities` | Machine-verifiable capability alignment. | `CapabilitiesResponse` |
+| `POST` | `/api/multilingual-assist` | Dedicated translation & localization. | `MultilingualAssistResponse` |
+| `POST` | `/api/chat` | Fan assistant conversation system. | `ChatResponse` |
+| `POST` | `/api/decision` | Operational triage & dispatch. | `DecisionResponse` |
+| `GET` | `/api/crowd` | Live crowd queue times telemetry. | `CrowdResponse` |
+| `POST` | `/api/sustainability` | Calculate travel emissions footprint. | `SustainabilityResponse` |
+| `POST` | `/api/announce` | Generate multilingual PA announcements. | `dict[str, str]` |
+| `POST` | `/api/briefing` | Volunteer shift briefings & duties. | `BriefingResponse` |
+| `GET` | `/api/metrics` | Live system observability metrics. | `dict` |
 
 ---
 
 ## 📚 Documentation
 
-For deeper dives into our systems, please review our comprehensive documentation:
-- [Architecture & Data Flow](docs/ARCHITECTURE.md)
-- [Challenge Alignment Map](docs/ALIGNMENT.md)
-- [Security & Trust](SECURITY.md)
+Review our extensive documentation suites under [docs/](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/):
+- 🏢 [Architecture Design & Data Flows](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/ARCHITECTURE.md)
+- 🎯 [Capabilities Alignment Matrix](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/ALIGNMENT.md)
+- ♿ [Accessibility & WCAG AA Integration](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/ACCESSIBILITY.md)
+- 🔌 [API Endpoints Specifications](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/API.md)
+- 🚀 [Production Deployment Guides](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/DEPLOY.md)
+- 🧪 [Testing & Verification Target Guides](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/TESTING.md)
+- 🤝 [Contribution Quality Controls](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/CONTRIBUTING.md)
+- ⚡ [Performance & Compression Design](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/PERFORMANCE.md)
+- 📊 [Observability & Load Benchmarks](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/OBSERVABILITY.md)
+- ⚠️ [Global Centralized Error Handling](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/ERROR_HANDLING.md)
+- 🛡️ [Security Defenses & SAST Auditing](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/SECURITY.md)
+- 📂 [Codebase Folder Organization Rules](file:///c:/Users/admin/Desktop/StadiumIQ%20AI/docs/PROJECT_STRUCTURE.md)
 
 ---
 
@@ -218,9 +228,33 @@ npm run dev
 
 ---
 
+## 🛡️ Quality Controls & Quality Verification
+
+Run checks locally to assert quality metrics:
+
+```bash
+# Run backend code checks
+cd backend
+black --check .
+isort --check-only .
+ruff check .
+bandit -r . -x ./tests,./venv
+pytest --cov=. --cov-fail-under=85
+
+# Run frontend code checks
+cd frontend
+npm run format:check
+npm run lint
+npm run type-check
+npm test
+```
+
+---
+
 ## 📝 License
 MIT License — Engineered for the **FIFA World Cup 2026** across 🇺🇸 🇨🇦 🇲🇽.
 
 <div align="center">
 <b>StadiumIQ 2026</b> — <i>AI that powers the beautiful game.</i>
 </div>
+
